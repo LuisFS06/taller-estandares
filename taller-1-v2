@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 1 — Aprender a caminar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --ink: #0d1420;
+    --panel: #111a28;
+    --panel-2: #16202f;
+    --paper: #eee9df;
+    --paper-dim: #c9c2b1;
+    --line: #2a394d;
+    --amber: #e2a545;
+    --green: #5fb894;
+    --red: #d16a5a;
+    --slate: #93a1b5;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --display: 'Fraunces', serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%; margin:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:var(--sans);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+  }
+  ::selection{background:var(--amber); color:var(--ink);}
+  code{font-family:var(--mono);}
+
+  /* ================= DECK SHELL ================= */
+  .deck{position:relative; height:100vh; width:100vw;}
+
+  .slide{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    padding:56px 72px 90px;
+    opacity:0; visibility:hidden;
+    transform:translateX(24px);
+    transition:opacity .38s ease, transform .38s ease;
+    overflow-y:auto;
+  }
+  .slide.active{opacity:1; visibility:visible; transform:translateX(0);}
+  @media(max-width:820px){ .slide{padding:40px 26px 100px;} }
+
+  .slide::before{
+    content:"";
+    position:fixed; inset:0; z-index:-1;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(226,165,69,0.03) 0px, rgba(226,165,69,0.03) 1px, transparent 1px, transparent 34px),
+      repeating-linear-gradient(90deg, rgba(226,165,69,0.03) 0px, rgba(226,165,69,0.03) 1px, transparent 1px, transparent 34px);
+    pointer-events:none;
+  }
+
+  .slide-inner{max-width:980px; margin:0 auto; width:100%;}
+  .slide.wide .slide-inner{max-width:1100px;}
+
+  .eyebrow{
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--amber); display:flex; align-items:center; gap:9px; margin-bottom:16px;
+  }
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); flex-shrink:0;}
+
+  h1.big{font-family:var(--display); font-weight:500; color:var(--paper); font-size:clamp(34px, 4.6vw, 56px); line-height:1.06; margin:0 0 18px;}
+  h1.big em{font-style:italic; color:var(--amber);}
+  h2.big{font-family:var(--display); font-weight:500; color:var(--paper); font-size:clamp(28px, 3.6vw, 42px); line-height:1.1; margin:0 0 16px;}
+  p.lede{color:var(--paper-dim); font-size:clamp(16px,1.6vw,19px); max-width:680px; margin:0 0 8px;}
+
+  /* ================= NAV CHROME ================= */
+  .chrome-top{position:fixed; top:0; left:0; right:0; height:3px; background:var(--line); z-index:50;}
+  .chrome-top .fill{height:100%; background:var(--amber); width:0%; transition:width .35s ease;}
+
+  .chrome-bottom{
+    position:fixed; bottom:0; left:0; right:0; height:64px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 28px; z-index:50;
+    background:linear-gradient(to top, var(--ink) 60%, transparent);
+  }
+  .nav-meta{font-family:var(--mono); font-size:11.5px; color:var(--slate); letter-spacing:.06em; display:flex; align-items:center; gap:14px;}
+  .nav-meta b{color:var(--paper);}
+  .nav-dots{display:flex; gap:6px;}
+  .nav-dots .d{width:5px; height:5px; border-radius:50%; background:var(--line); transition:background .2s;}
+  .nav-dots .d.on{background:var(--amber);}
+
+  .nav-btns{display:flex; gap:10px;}
+  .nav-btn{width:42px; height:42px; border-radius:50%; border:1px solid var(--line); background:var(--panel); color:var(--paper); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all .2s ease;}
+  .nav-btn:hover{border-color:var(--amber); color:var(--amber);}
+  .nav-btn:disabled{opacity:.3; cursor:default;}
+  .nav-btn:disabled:hover{border-color:var(--line); color:var(--paper);}
+
+  /* ================= COVER ================= */
+  .slide.cover{justify-content:center;}
+  .cover-meta{display:flex; gap:26px; margin-top:44px; flex-wrap:wrap; font-family:var(--mono); font-size:12.5px; color:var(--paper-dim); padding-top:20px; border-top:1px dashed var(--line);}
+  .cover-meta span b{color:var(--paper); font-weight:600;}
+
+  /* ================= STATEMENT SLIDES ================= */
+  .slide.statement{justify-content:center;}
+  .statement p.lede{font-size:clamp(18px,2vw,22px); max-width:760px;}
+
+  /* ================= MINDSET GRID ================= */
+  .mindset-grid{display:grid; grid-template-columns:1fr auto 1fr; gap:0; align-items:stretch; margin-top:26px;}
+  @media(max-width:760px){ .mindset-grid{grid-template-columns:1fr;} .mindset-vs{transform:rotate(90deg); margin:6px 0;} }
+  .mindset-col{border:1px solid var(--line); border-radius:4px; padding:22px 24px;}
+  .mindset-col.script{background:var(--panel);}
+  .mindset-col.system{background:linear-gradient(160deg, rgba(95,184,148,0.08), var(--panel) 55%);}
+  .mindset-head{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .mindset-icon{font-size:15px; color:var(--slate);}
+  .mindset-col.system .mindset-icon{color:var(--green);}
+  .mindset-title{font-family:var(--display); font-size:17px; color:var(--paper);}
+  .mindset-col ul{margin:0; padding:0; list-style:none;}
+  .mindset-col li{font-size:13.5px; color:var(--paper-dim); padding:8px 0 8px 18px; position:relative; border-top:1px dashed var(--line);}
+  .mindset-col li:first-child{border-top:none;}
+  .mindset-col.script li::before{content:"–"; position:absolute; left:0; color:var(--slate);}
+  .mindset-col.system li::before{content:"+"; position:absolute; left:0; color:var(--green);}
+  .mindset-vs{display:flex; align-items:center; justify-content:center; padding:0 16px; font-family:var(--mono); color:var(--slate); font-size:14px;}
+
+  .recap-box{padding:18px 22px; border:1px solid var(--line); border-radius:6px; background:var(--panel);}
+  .recap-box p{margin:0; color:var(--paper-dim); font-size:14px;}
+
+  /* ================= ROADMAP ================= */
+  .roadmap{display:flex; align-items:stretch; gap:0; margin-top:30px; flex-wrap:wrap;}
+  .rm-step{
+    flex:1; min-width:190px; background:var(--panel); border:1px solid var(--line); border-radius:6px;
+    padding:20px 20px 22px; position:relative; margin:0 4px 10px;
+  }
+  .rm-step .rm-n{font-family:var(--mono); font-size:11px; color:var(--slate); letter-spacing:.1em;}
+  .rm-step .rm-title{font-family:var(--display); font-size:19px; color:var(--paper); margin:8px 0 8px;}
+  .rm-step .rm-desc{font-size:13px; color:var(--paper-dim);}
+  .rm-step:nth-child(1){border-top:2px solid var(--red);}
+  .rm-step:nth-child(2){border-top:2px solid var(--amber);}
+  .rm-step:nth-child(3){border-top:2px solid #7fa7d1;}
+  .rm-step:nth-child(4){border-top:2px solid var(--green);}
+  .rm-arrow{display:flex; align-items:center; justify-content:center; color:var(--slate); font-family:var(--mono); font-size:15px; padding:0 6px;}
+  @media(max-width:900px){ .rm-arrow{display:none;} }
+
+  /* ================= PRINCIPLE SLIDES ================= */
+  .p-head{display:flex; align-items:baseline; gap:14px; margin-bottom:6px; flex-wrap:wrap;}
+  .p-index{font-family:var(--mono); font-size:12px; color:var(--slate); border:1px solid var(--line); padding:2px 8px; border-radius:20px;}
+  .p-tag{font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--amber); background:rgba(226,165,69,0.1); border:1px solid rgba(226,165,69,0.3); padding:3px 8px; border-radius:3px;}
+  .p-story{
+    font-family:var(--mono); font-size:11.5px; color:var(--slate); letter-spacing:.03em;
+    margin:2px 0 14px; padding-left:2px; border-left:2px solid var(--line); padding-left:12px;
+  }
+  .p-desc{color:var(--paper-dim); font-size:15px; margin:0 0 20px; max-width:660px;}
+  .p-desc b{color:var(--paper); font-weight:600;}
+
+  .code-card{background:var(--panel); border:1px solid var(--line); border-radius:4px; overflow:hidden;}
+  .code-toolbar{display:flex; align-items:center; justify-content:space-between; padding:9px 15px; border-bottom:1px solid var(--line); background:var(--panel-2);}
+  .status-toggle{display:flex; background:var(--ink); border:1px solid var(--line); border-radius:20px; padding:3px; gap:2px;}
+  .status-toggle button{font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; background:transparent; border:none; color:var(--slate); padding:4px 12px; border-radius:16px; cursor:pointer; transition:all .25s ease;}
+  .status-toggle button.active.before{background:var(--red); color:#1a0d0a;}
+  .status-toggle button.active.after{background:var(--green); color:#0a1a13;}
+  .status-label{font-family:var(--mono); font-size:10.5px; color:var(--slate); letter-spacing:.05em;}
+  .status-label .live-red{color:var(--red);}
+  .status-label .live-green{color:var(--green);}
+  pre{margin:0; padding:16px 18px; font-family:var(--mono); font-size:12.5px; line-height:1.6; overflow-x:auto; color:#d8dce3;}
+  .code-pane{display:none;}
+  .code-pane.visible{display:block;}
+  .cmt{color:var(--slate); font-style:italic;}
+  .kw{color:#c586c0;}
+  .str{color:#ce9178;}
+  .fn{color:#8bb4e0;}
+  .num{color:#b5cea8;}
+  .code-annot{padding:12px 18px; border-top:1px solid var(--line); background:var(--panel-2); font-size:12.5px; color:var(--paper-dim); display:flex; gap:9px;}
+  .code-annot .mark{font-family:var(--mono); flex-shrink:0;}
+
+  .skew{margin-top:16px; padding:16px 20px; background:linear-gradient(135deg, rgba(209,106,90,0.09), rgba(209,106,90,0.02)); border:1px solid rgba(209,106,90,0.35); border-radius:4px;}
+  .skew-title{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--red); margin-bottom:8px; display:flex; align-items:center; gap:7px;}
+  .skew-title::before{content:"⚠"; font-size:12px;}
+  .skew p{color:var(--paper-dim); font-size:13px; margin:0;}
+  .skew-diagram{display:flex; align-items:center; gap:0; margin:12px 0; font-family:var(--mono); font-size:11.5px;}
+  .skew-box{flex:1; padding:10px 12px; border:1px solid var(--line); border-radius:3px; background:var(--ink);}
+  .skew-box .lbl{color:var(--slate); font-size:10px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:5px;}
+  .skew-arrow{padding:0 12px; color:var(--red); font-size:15px;}
+
+  /* ================= EXERCISE SLIDES ================= */
+  .slide.exercise .slide-inner{max-width:820px;}
+  .ex-banner{display:flex; align-items:center; justify-content:space-between; gap:20px; background:var(--panel-2); border:1px solid var(--line); border-radius:6px; padding:16px 22px; margin:22px 0 26px; flex-wrap:wrap;}
+  .ex-banner-left{display:flex; align-items:center; gap:14px;}
+  .ex-icon{font-size:22px;}
+  .ex-banner-title{font-family:var(--display); font-size:19px; color:var(--paper);}
+  .ex-banner-sub{font-family:var(--mono); font-size:11.5px; color:var(--slate); margin-top:2px;}
+  .timer{display:flex; align-items:center; gap:10px;}
+  .timer-display{font-family:var(--mono); font-size:26px; color:var(--amber); min-width:82px; text-align:center; letter-spacing:.02em;}
+  .timer.done .timer-display{color:var(--red);}
+  .timer-btn{font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; background:var(--ink); border:1px solid var(--line); color:var(--paper-dim); padding:8px 14px; border-radius:20px; cursor:pointer; transition:all .2s;}
+  .timer-btn:hover{border-color:var(--amber); color:var(--amber);}
+  .checklist{display:flex; flex-direction:column; gap:0; border:1px solid var(--line); border-radius:6px; overflow:hidden;}
+  .check-item{display:flex; align-items:flex-start; gap:14px; padding:16px 20px; border-bottom:1px solid var(--line); background:var(--panel); cursor:pointer; transition:background .15s;}
+  .check-item:last-child{border-bottom:none;}
+  .check-item.highlight{background:rgba(226,165,69,0.06);}
+  .check-item:hover{background:var(--panel-2);}
+  .check-box{flex-shrink:0; width:20px; height:20px; border-radius:4px; border:1.5px solid var(--line); margin-top:1px; display:flex; align-items:center; justify-content:center; transition:all .2s;}
+  .check-item.checked .check-box{background:var(--green); border-color:var(--green);}
+  .check-box::after{content:"✓"; font-size:12px; color:#0a1a13; opacity:0; transition:opacity .15s;}
+  .check-item.checked .check-box::after{opacity:1;}
+  .check-text{font-size:14.5px; color:var(--paper-dim); line-height:1.5;}
+  .check-item.checked .check-text{color:var(--paper-dim); text-decoration:line-through; opacity:.6;}
+  .ex-footer{margin-top:20px; padding:14px 18px; border-left:2px solid var(--amber); background:rgba(226,165,69,0.06); font-size:13.5px; color:var(--paper-dim);}
+  .ex-footer b{color:var(--paper);}
+
+  /* ================= CLOSING ================= */
+  .slide.closing{justify-content:center;}
+  .closing-card{max-width:680px; padding:30px 34px; border:1px solid var(--line); border-radius:6px; background:radial-gradient(circle at 20% 0%, rgba(95,184,148,0.08), transparent 60%);}
+  .closing-card p{color:var(--paper-dim); font-size:15.5px; margin:0 0 14px;}
+  .closing-card p:last-child{margin-bottom:0;}
+  .closing-card b{color:var(--paper);}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+
+<div class="chrome-top"><div class="fill" id="progressFill"></div></div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 · COVER -->
+  <section class="slide cover active" data-section="Apertura">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>SERIE · DEL EXPERIMENTO AL SISTEMA — TALLER 1 DE 3</div>
+      <h1 class="big">Aprender a<br><em>caminar</em></h1>
+      <p class="lede">Escribimos código como quien da sus primeros pasos: probando, cayéndose, un intento a la vez. Y a ese mismo código, sin haber aprendido todavía a pararse, lo mandamos a sostener una tesis — producción, todos los días, sin nosotros al lado. Hoy es sobre esos primeros pasos.</p>
+      <div class="cover-meta">
+        <span>Taller <b>1 de 3</b></span>
+        <span>Duración <b>4 horas</b></span>
+        <span>Material <b>tu propio código</b></span>
+        <span>Lenguaje <b>Python</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · STATEMENT: script vs sistema -->
+  <section class="slide statement" data-section="Apertura">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>PARA EMPEZAR</div>
+      <h2 class="big">De los primeros pasos<br>a sostener una tesis</h2>
+      <p class="lede">Un bebé no filtra nada: prueba todo, se cae, aprende a los golpes qué le hace daño. Así escribimos casi todo el código al principio — probás, se rompe algo, seguís. Y está bien: así se aprende a caminar.</p>
+      <p class="lede">El problema es lo que hacemos después. Agarramos ese mismo código, el que recién está aprendiendo a pararse, y lo mandamos derecho a sostener una tesis: un sistema en producción, corriendo todos los días, del que depende gente que ni conocemos. Es, literalmente, poner a un niño a escribir una tesis porque ya sabe agarrar el lápiz.</p>
+      <p class="lede">Hoy no vamos a enseñarte a escribir código — ya sabés. Vamos a enseñarte los primeros pasos reales: los reflejos mínimos que separan un experimento que se cae solo, de uno que empieza a poder sostenerse.</p>
+    </div>
+  </section>
+
+  <!-- 3 · MINDSET GRID -->
+  <section class="slide wide" data-section="Apertura">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>EL EJE DE TODO EL TALLER</div>
+      <h2 class="big">Dos formas de resolver el mismo problema</h2>
+      <p class="lede">No es que una sea "de niño" y la otra "de adulto" — los primeros pasos siguen siendo necesarios. Es que una está pensada para que la sostengas vos, en brazos, hoy — y la otra está pensada para que camine sola, sin vos, sosteniendo lo que haga falta.</p>
+
+      <div class="mindset-grid">
+        <div class="mindset-col script">
+          <div class="mindset-head"><span class="mindset-icon">✎</span><span class="mindset-title">Mentalidad de script</span></div>
+          <ul>
+            <li>El objetivo es llegar al resultado hoy.</li>
+            <li>Guarda un archivo plano en tu máquina, "para revisar después".</li>
+            <li>Las decisiones viven en tu cabeza, no en el código.</li>
+            <li>Si algo falla, lo corrés de nuevo a mano.</li>
+            <li>Funciona una vez, para vos.</li>
+          </ul>
+        </div>
+        <div class="mindset-vs">↔</div>
+        <div class="mindset-col system">
+          <div class="mindset-head"><span class="mindset-icon">⚙</span><span class="mindset-title">Mentalidad de sistema</span></div>
+          <ul>
+            <li>El objetivo es que siga funcionando sin vos.</li>
+            <li>Los resultados se guardan de una forma que otro proceso puede consumir.</li>
+            <li>Las decisiones están escritas en el código, con nombre y razón.</li>
+            <li>Si algo falla, el sistema avisa antes de que sea un problema.</li>
+            <li>Funciona muchas veces, para cualquiera del equipo.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="recap-box" style="margin-top:22px;">
+        <p>El error no es escribir código como un script — todos empezamos ahí, y está bien. El error es no notar el momento en que ese script dejó de ser un experimento tuyo y pasó a ser la tesis de otra persona.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · ROADMAP -->
+  <section class="slide wide" data-section="Apertura">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>CÓMO VAMOS A TRABAJAR HOY</div>
+      <h2 class="big">Cuatro primeros pasos, un solo código</h2>
+      <p class="lede" style="margin-bottom:8px;">No vamos a ver cuatro ejemplos sueltos. Vamos a seguir <b style="color:var(--paper);">un solo pipeline</b> mientras da sus primeros pasos — el mismo que probablemente ya escribiste alguna vez — y en cada parada aprende un reflejo distinto.</p>
+
+      <div class="roadmap">
+        <div class="rm-step">
+          <div class="rm-n">PARADA 1</div>
+          <div class="rm-title">Fail Fast</div>
+          <div class="rm-desc">El primer tropezón. Aprende a llorar fuerte en vez de aguantarse el dolor en silencio.</div>
+        </div>
+        <div class="rm-arrow">→</div>
+        <div class="rm-step">
+          <div class="rm-n">PARADA 2</div>
+          <div class="rm-title">KISS</div>
+          <div class="rm-desc">Ya sabe quejarse; ahora aprende a explicarse — a decir qué le pasó, no sólo que algo pasó.</div>
+        </div>
+        <div class="rm-arrow">→</div>
+        <div class="rm-step">
+          <div class="rm-n">PARADA 3</div>
+          <div class="rm-title">YAGNI</div>
+          <div class="rm-desc">La tentación de correr antes de caminar. El principio es la disciplina de no dejarlo.</div>
+        </div>
+        <div class="rm-arrow">→</div>
+        <div class="rm-step">
+          <div class="rm-n">PARADA 4</div>
+          <div class="rm-title">DRY</div>
+          <div class="rm-desc">Recién ahora, sin apuro, se reconoce dando el mismo paso dos veces sin darse cuenta.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · FAIL FAST -->
+  <section class="slide wide" data-section="Fail Fast">
+    <div class="slide-inner">
+      <div class="p-head">
+        <span class="p-index">01</span>
+        <h2 class="big" style="margin:0;">Fail Fast</h2>
+        <span class="p-tag">empezá rápido, fallá fuerte</span>
+      </div>
+      <div class="p-story">PARADA 1 · DÍA 1 — el primer tropezón</div>
+      <p class="p-desc">Caerse está bien. Es casi inevitable, y no es lo que vamos a intentar evitar hoy. Lo que importa es <b>qué hace tu código cuando lo que armaste rápido se rompe</b>: si llora fuerte y queda una nota de dónde le dolió, ya estás cumpliendo — sin querer — con el primer principio del taller.</p>
+
+      <div class="code-card">
+        <div class="code-toolbar">
+          <div class="status-toggle" data-group="ff">
+            <button class="active before" data-target="ff-before">antes</button>
+            <button class="after" data-target="ff-after">después</button>
+          </div>
+          <div class="status-label" data-status="ff"><span class="live-red">● falla en silencio</span></div>
+        </div>
+        <div class="code-pane visible" id="ff-before">
+<pre><span class="cmt"># día 1 — necesitamos un baseline ya</span>
+<span class="kw">def</span> <span class="fn">run_pipeline</span>():
+    df = load_customers()
+    df[<span class="str">"engagement_score"</span>] = df[<span class="str">"sessions"</span>] / df[<span class="str">"days_active"</span>]
+    <span class="kw">try</span>:
+        model = train(df)
+    <span class="kw">except</span>:
+        <span class="kw">pass</span>
+    <span class="kw">return</span> model</pre>
+        </div>
+        <div class="code-pane" id="ff-after">
+<pre><span class="kw">def</span> <span class="fn">run_pipeline</span>():
+    df = load_customers()
+    df[<span class="str">"engagement_score"</span>] = df[<span class="str">"sessions"</span>] / df[<span class="str">"days_active"</span>]
+    <span class="kw">try</span>:
+        model = train(df)
+    <span class="kw">except</span> TrainingError <span class="kw">as</span> e:
+        logger.error(<span class="str">f"train falló: {e}"</span>)
+        <span class="cmt"># NOTA: days_active=0 en 12 filas -> división por cero</span>
+        <span class="cmt"># revisar cuando lleguemos a KISS</span>
+        <span class="kw">raise</span>
+    <span class="kw">return</span> model</pre>
+        </div>
+        <div class="code-annot" id="ff-annot"
+             data-before="El try/except sin tipo esconde el problema. El baseline &quot;funciona&quot; — pero no sabés si de verdad entrenó, ni sobre qué datos."
+             data-after="Misma velocidad, mismo día. La diferencia es que el error se ve, y queda anotado qué pasó y dónde — esa nota la vamos a volver a usar.">
+          <span class="mark">→</span>
+          <span>El try/except sin tipo esconde el problema. El baseline "funciona" — pero no sabés si de verdad entrenó, ni sobre qué datos.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · EXERCISE FAIL FAST -->
+  <section class="slide exercise" data-section="Fail Fast">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>EJERCICIO PRÁCTICO · FAIL FAST</div>
+      <h2 class="big">Encontrá los silencios</h2>
+      <p class="lede">Trabajá sobre el fragmento que trajiste. Buscá cada lugar donde el código "sigue de largo" en vez de avisar que algo salió mal.</p>
+
+      <div class="ex-banner">
+        <div class="ex-banner-left">
+          <span class="ex-icon">⏱</span>
+          <div>
+            <div class="ex-banner-title">25–30 minutos</div>
+            <div class="ex-banner-sub">Trabajo individual sobre tu propio código</div>
+          </div>
+        </div>
+        <div class="timer" data-duration="1500">
+          <span class="timer-display">25:00</span>
+          <button class="timer-btn" data-action="toggle">Iniciar</button>
+          <button class="timer-btn" data-action="reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay algún <code>except</code> sin especificar el tipo de error?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay algún <code>except: pass</code> (o equivalente) que deja continuar el código en silencio?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿El código valida los datos de entrada, o asume que siempre van a venir bien?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">Si esto falla en producción hoy, ¿alguien se entera en minutos, o en semanas?</span></label>
+        <label class="check-item highlight"><span class="check-box"></span><span class="check-text">Documentá tu primer hallazgo: qué encontraste, en qué archivo, en qué línea. Vas a volver a esta nota en las próximas tres paradas.</span></label>
+      </div>
+
+      <div class="ex-footer"><b>Al terminar:</b> no hace falta arreglar todo — sólo dejar identificado dónde el código debería frenar y avisar, en vez de seguir de largo.</div>
+    </div>
+  </section>
+
+  <!-- 7 · KISS -->
+  <section class="slide wide" data-section="KISS">
+    <div class="slide-inner">
+      <div class="p-head">
+        <span class="p-index">02</span>
+        <h2 class="big" style="margin:0;">KISS — Keep It Simple</h2>
+        <span class="p-tag">se lee, no se descifra</span>
+      </div>
+      <div class="p-story">PARADA 2 · DÍA 2 — con el llanto ya claro, hay que aprender a hablar</div>
+      <p class="p-desc">Encontraste el problema y lo documentaste — ya sabe quejarse. Ahora tiene que aprender a explicarse. Alguien —vos mismo, probablemente— tiene que agregar una regla de limpieza al mismo pipeline, rápido, y la escribe toda en una sola línea porque "total ya está andando". Simple no es menos código: es <b>código que se entiende sin ejecutar el debugger</b>.</p>
+
+      <div class="code-card">
+        <div class="code-toolbar">
+          <div class="status-toggle" data-group="kiss">
+            <button class="active before" data-target="kiss-before">antes</button>
+            <button class="after" data-target="kiss-after">después</button>
+          </div>
+          <div class="status-label" data-status="kiss"><span class="live-red">● ilegible en code review</span></div>
+        </div>
+        <div class="code-pane visible" id="kiss-before">
+<pre>flags = {k: (<span class="num">1</span> <span class="kw">if</span> v <span class="kw">else</span> <span class="num">0</span>) <span class="kw">for</span> k, v <span class="kw">in</span>
+  {c: df[c].isna().<span class="fn">sum</span>() / <span class="fn">len</span>(df) &gt; th.<span class="fn">get</span>(c, <span class="num">0.3</span>)
+   <span class="kw">for</span> c <span class="kw">in</span> df.columns <span class="kw">if</span> c <span class="kw">not</span> <span class="kw">in</span> excl}.items()}</pre>
+        </div>
+        <div class="code-pane" id="kiss-after">
+<pre><span class="kw">def</span> <span class="fn">flag_high_missing_columns</span>(df, threshold=<span class="num">0.3</span>, exclude=<span class="kw">None</span>):
+    exclude = exclude <span class="kw">or</span> []
+    flagged = {}
+    <span class="kw">for</span> col <span class="kw">in</span> df.columns:
+        <span class="kw">if</span> col <span class="kw">in</span> exclude:
+            <span class="kw">continue</span>
+        missing_rate = df[col].isna().mean()
+        flagged[col] = missing_rate &gt; threshold
+    <span class="kw">return</span> flagged</pre>
+        </div>
+        <div class="code-annot" id="kiss-annot"
+             data-before="Hace exactamente lo mismo que la versión de abajo. Pero para saber qué hace tenés que leerla dos veces y simular el diccionario a mano."
+             data-after="Nombre claro, loop legible, sin comprehensions anidadas. Se lee de arriba a abajo — y es la misma velocidad de escritura, apenas un poco más de tipeo.">
+          <span class="mark">→</span>
+          <span>Hace exactamente lo mismo que la versión de abajo. Pero para saber qué hace tenés que leerla dos veces y simular el diccionario a mano.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · EXERCISE KISS -->
+  <section class="slide exercise" data-section="KISS">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>EJERCICIO PRÁCTICO · KISS</div>
+      <h2 class="big">Simplificá lo más denso de tu código</h2>
+      <p class="lede">Mismo fragmento, mismo checklist de hoy. Esta vez el foco es legibilidad.</p>
+
+      <div class="ex-banner">
+        <div class="ex-banner-left">
+          <span class="ex-icon">⏱</span>
+          <div>
+            <div class="ex-banner-title">25–30 minutos</div>
+            <div class="ex-banner-sub">Trabajo individual sobre tu propio código</div>
+          </div>
+        </div>
+        <div class="timer" data-duration="1500">
+          <span class="timer-display">25:00</span>
+          <button class="timer-btn" data-action="toggle">Iniciar</button>
+          <button class="timer-btn" data-action="reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay líneas que necesitás leer más de una vez para entenderlas?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay comprehensions o expresiones anidadas que podrían ser un loop simple con nombres claros?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Podés explicarle a la persona de al lado qué hace cada función en una sola frase?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay nombres genéricos (df2, tmp, x, val) que esconden qué representa realmente ese dato?</span></label>
+      </div>
+
+      <div class="ex-footer"><b>Al terminar:</b> elegí el bloque más denso que encontraste y reescribilo en tu editor para que se lea de corrido.</div>
+    </div>
+  </section>
+
+  <!-- 9 · YAGNI -->
+  <section class="slide wide" data-section="YAGNI">
+    <div class="slide-inner">
+      <div class="p-head">
+        <span class="p-index">03</span>
+        <h2 class="big" style="margin:0;">YAGNI — You Aren't Gonna Need It</h2>
+        <span class="p-tag">construí para hoy</span>
+      </div>
+      <div class="p-story">PARADA 3 · UNA SEMANA DESPUÉS — la tentación de correr antes de caminar</div>
+      <p class="p-desc">Justo cuando algo empieza a andar bien es cuando aparece la tentación de anticiparse: "¿por qué no lo armamos ya para cuando tengamos diez modelos?". Es querer correr antes de haber terminado de caminar. <b>La regla de los tres:</b> generalizás cuando aparece el tercer caso de uso real — no antes.</p>
+
+      <div class="code-card">
+        <div class="code-toolbar">
+          <div class="status-toggle" data-group="yagni">
+            <button class="active before" data-target="yagni-before">antes</button>
+            <button class="after" data-target="yagni-after">después</button>
+          </div>
+          <div class="status-label" data-status="yagni"><span class="live-red">● framework para 10 casos, 1 en uso</span></div>
+        </div>
+        <div class="code-pane visible" id="yagni-before">
+<pre><span class="kw">class</span> <span class="fn">AbstractModelFactoryBuilder</span>(ABC):
+    <span class="cmt"># soporta 10 tipos de modelo, config YAML anidada,</span>
+    <span class="cmt"># plugins de preprocesamiento intercambiables...</span>
+    <span class="cmt"># hoy: 1 modelo (LightGBM) en producción.</span>
+    <span class="kw">def</span> <span class="fn">register_strategy</span>(<span class="kw">self</span>, name, cls, config_schema):
+        ...</pre>
+        </div>
+        <div class="code-pane" id="yagni-after">
+<pre><span class="kw">def</span> <span class="fn">train_lightgbm_model</span>(X, y, params):
+    model = LGBMClassifier(**params)
+    model.fit(X, y)
+    <span class="kw">return</span> model
+
+<span class="cmt"># cuando aparezca un segundo caso real, se compara</span>
+<span class="cmt"># y recién con el tercero se decide si vale la pena</span>
+<span class="cmt"># una interfaz común.</span></pre>
+        </div>
+        <div class="code-annot" id="yagni-annot"
+             data-before="Cada hora en esa abstracción es una hora que el pipeline real no se validó, no se documentó, no se probó."
+             data-after="Diez líneas, hace exactamente lo que hoy se necesita. La generalización se gana con casos reales — no se adivina."
+        >
+          <span class="mark">→</span>
+          <span>Cada hora en esa abstracción es una hora que el pipeline real no se validó, no se documentó, no se probó.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · EXERCISE YAGNI -->
+  <section class="slide exercise" data-section="YAGNI">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>EJERCICIO PRÁCTICO · YAGNI</div>
+      <h2 class="big">Encontrá lo que sobra</h2>
+      <p class="lede">Buscá lo que se construyó "por si acaso" y todavía no se usó ni una vez.</p>
+
+      <div class="ex-banner">
+        <div class="ex-banner-left">
+          <span class="ex-icon">⏱</span>
+          <div>
+            <div class="ex-banner-title">25–30 minutos</div>
+            <div class="ex-banner-sub">Trabajo individual sobre tu propio código</div>
+          </div>
+        </div>
+        <div class="timer" data-duration="1500">
+          <span class="timer-display">25:00</span>
+          <button class="timer-btn" data-action="toggle">Iniciar</button>
+          <button class="timer-btn" data-action="reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay clases o abstracciones construidas para casos que todavía no existen?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay parámetros de función que en la práctica nunca cambian?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay configuración (YAML, flags, opciones) para escenarios hipotéticos que nunca se usaron?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">Para cada abstracción que encontrás: ¿cuántos casos de uso reales soporta hoy? ¿Uno? ¿Cero?</span></label>
+      </div>
+
+      <div class="ex-footer"><b>Al terminar:</b> marcá qué se podría borrar o simplificar hoy mismo sin perder nada que realmente se esté usando.</div>
+    </div>
+  </section>
+
+  <!-- 11 · DRY -->
+  <section class="slide wide" data-section="DRY">
+    <div class="slide-inner">
+      <div class="p-head">
+        <span class="p-index">04</span>
+        <h2 class="big" style="margin:0;">DRY — Don't Repeat Yourself</h2>
+        <span class="p-tag">prefactorización, no anticipación</span>
+      </div>
+      <div class="p-story">PARADA 4 · UN MES DESPUÉS — se reconoce dando el mismo paso dos veces</div>
+      <p class="p-desc">Este es el giro: como en las tres paradas anteriores evitaste sobre-abstraer y mantuviste todo simple, en algún momento alguien más necesitó <code>engagement_score</code> — esta vez en el servicio que sirve el modelo — y lo volvió a escribir, un poco distinto. Recién ahora, con la duplicación <b>visible y real</b>, tiene sentido unificarla. No es anticipar el futuro: es reconocer que ya diste ese paso antes.</p>
+
+      <div class="code-card">
+        <div class="code-toolbar">
+          <div class="status-toggle" data-group="dry">
+            <button class="active before" data-target="dry-before">antes</button>
+            <button class="after" data-target="dry-after">después</button>
+          </div>
+          <div class="status-label" data-status="dry"><span class="live-red">● duplicado en 2 archivos</span></div>
+        </div>
+        <div class="code-pane visible" id="dry-before">
+<pre><span class="cmt"># run_pipeline.py — el mismo de la parada 1</span>
+df[<span class="str">"engagement_score"</span>] = df[<span class="str">"sessions"</span>] / df[<span class="str">"days_active"</span>]
+
+<span class="cmt"># serving_api.py — nuevo, escrito por otra persona</span>
+<span class="kw">def</span> <span class="fn">compute_features</span>(payload):
+    score = payload[<span class="str">"sessions"</span>] / <span class="kw">max</span>(payload[<span class="str">"days_active"</span>], <span class="num">1</span>)
+    <span class="kw">return</span> {<span class="str">"engagement_score"</span>: score}</pre>
+        </div>
+        <div class="code-pane" id="dry-after">
+<pre><span class="cmt"># features.py — una sola fuente de verdad</span>
+<span class="kw">def</span> <span class="fn">engagement_score</span>(sessions, days_active):
+    <span class="kw">return</span> sessions / <span class="kw">max</span>(days_active, <span class="num">1</span>)
+
+<span class="cmt"># run_pipeline.py</span>
+<span class="kw">from</span> features <span class="kw">import</span> engagement_score
+df[<span class="str">"engagement_score"</span>] = df.apply(
+    <span class="kw">lambda</span> r: engagement_score(r.sessions, r.days_active), axis=<span class="num">1</span>)
+
+<span class="cmt"># serving_api.py</span>
+<span class="kw">from</span> features <span class="kw">import</span> engagement_score
+score = engagement_score(payload[<span class="str">"sessions"</span>], payload[<span class="str">"days_active"</span>])</pre>
+        </div>
+        <div class="code-annot" id="dry-annot"
+             data-before="Sin max() en el pipeline original, sin +1 en la copia nueva: no son la misma función. Se ven parecidas. No lo son."
+             data-after="Una sola función, importada en ambos lados. Si algún día cambia la definición, cambia en un solo lugar.">
+          <span class="mark">→</span>
+          <span>Sin <code>max()</code> en el pipeline original, con <code>max()</code> en la copia nueva: no son la misma función. Se ven parecidas. No lo son.</span>
+        </div>
+      </div>
+
+      <div class="skew">
+        <div class="skew-title">Training-Serving Skew</div>
+        <p>El bug más específico de ML: la misma variable, calculada distinto en entrenamiento y en producción. No tira error — el modelo simplemente empieza a ver datos distintos a los que aprendió a leer.</p>
+        <div class="skew-diagram">
+          <div class="skew-box"><div class="lbl">Entrenamiento</div>engagement_score = sessions / days_active</div>
+          <div class="skew-arrow">≠</div>
+          <div class="skew-box"><div class="lbl">Producción</div>engagement_score = sessions / max(days_active, 1)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · EXERCISE DRY -->
+  <section class="slide exercise" data-section="DRY">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>EJERCICIO PRÁCTICO · DRY</div>
+      <h2 class="big">Revisitá lo que construiste hoy</h2>
+      <p class="lede">Con tu código ya simple, legible y sin abstracciones de más — ¿qué terminaste escribiendo dos veces sin querer?</p>
+
+      <div class="ex-banner">
+        <div class="ex-banner-left">
+          <span class="ex-icon">⏱</span>
+          <div>
+            <div class="ex-banner-title">25–30 minutos</div>
+            <div class="ex-banner-sub">Trabajo individual sobre tu propio código</div>
+          </div>
+        </div>
+        <div class="timer" data-duration="1500">
+          <span class="timer-display">25:00</span>
+          <button class="timer-btn" data-action="toggle">Iniciar</button>
+          <button class="timer-btn" data-action="reset">Reset</button>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿La misma variable o feature aparece calculada en más de un archivo (por ejemplo, entrenamiento vs. producción)?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Alguna fórmula se escribió "parecida pero no igual" en dos lugares?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">¿Hay una función que hace casi lo mismo que otra que ya escribiste hoy?</span></label>
+        <label class="check-item"><span class="check-box"></span><span class="check-text">Elegí la duplicación más clara: ¿a qué función única la moverías, y quién debería importarla?</span></label>
+      </div>
+
+      <div class="ex-footer"><b>Al terminar:</b> no hace falta unificar todo — sólo dejar identificado qué se repitió y a dónde debería vivir.</div>
+    </div>
+  </section>
+
+  <!-- 13 · CLOSING -->
+  <section class="slide closing" data-section="Cierre">
+    <div class="slide-inner">
+      <div class="eyebrow"><span class="dot"></span>ANTES DE CERRAR</div>
+      <h2 class="big">Aprendió a caminar. Todavía no a organizarse.</h2>
+      <div class="closing-card">
+        <p>Seguiste un mismo pipeline dando cuatro primeros pasos: tropezó y aprendió a llorar fuerte, aprendió a explicarse, resistió la tentación de correr antes de tiempo, y recién al final reconoció que había dado el mismo paso dos veces. <b>Ese orden no es casualidad</b> — es, más o menos, cómo se aprende a caminar de verdad.</p>
+        <p>La meta de hoy no era dejar perfecto el fragmento que trajiste. Era que dejara de ser un código que se cae solo apenas nadie lo mira — un experimento que, sin estos reflejos, seguía siendo demasiado chico para la tesis que le estábamos pidiendo que sostuviera.</p>
+        <p style="margin-top:18px; color:var(--slate); font-family:var(--mono); font-size:12.5px;">TALLER 2 — APRENDER A ORGANIZARSE, como quien empieza el colegio →</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="chrome-bottom">
+  <div class="nav-meta">
+    <span id="sectionLabel"><b>Apertura</b></span>
+    <div class="nav-dots" id="navDots"></div>
+  </div>
+  <div class="nav-meta">
+    <span><b id="slideNum">01</b> / <span id="slideTotal">13</span></span>
+  </div>
+  <div class="nav-btns">
+    <button class="nav-btn" id="prevBtn" aria-label="Anterior">←</button>
+    <button class="nav-btn" id="nextBtn" aria-label="Siguiente">→</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var total = slides.length;
+  var current = 0;
+
+  var progressFill = document.getElementById('progressFill');
+  var sectionLabel = document.getElementById('sectionLabel');
+  var slideNum = document.getElementById('slideNum');
+  var slideTotal = document.getElementById('slideTotal');
+  var navDots = document.getElementById('navDots');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+
+  slideTotal.textContent = String(total).padStart(2,'0');
+
+  slides.forEach(function(s, i){
+    var dot = document.createElement('div');
+    dot.className = 'd';
+    dot.addEventListener('click', function(){ goTo(i); });
+    navDots.appendChild(dot);
+  });
+  var dots = Array.prototype.slice.call(navDots.children);
+
+  function render(){
+    slides.forEach(function(s, i){ s.classList.toggle('active', i === current); });
+    dots.forEach(function(d, i){ d.classList.toggle('on', i === current); });
+    progressFill.style.width = ((current+1)/total*100) + '%';
+    slideNum.textContent = String(current+1).padStart(2,'0');
+    sectionLabel.innerHTML = '<b>' + slides[current].dataset.section + '</b>';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  function goTo(i){ if(i < 0 || i >= total) return; current = i; render(); }
+
+  prevBtn.addEventListener('click', function(){ goTo(current - 1); });
+  nextBtn.addEventListener('click', function(){ goTo(current + 1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === ' '){ e.preventDefault(); goTo(current + 1); }
+    if(e.key === 'ArrowLeft'){ e.preventDefault(); goTo(current - 1); }
+  });
+
+  render();
+
+  /* ---- before/after code toggles ---- */
+  document.querySelectorAll('.status-toggle').forEach(function(toggle){
+    var group = toggle.dataset.group;
+    var buttons = toggle.querySelectorAll('button');
+    var label = document.querySelector('[data-status="' + group + '"]');
+    var annot = document.getElementById(group + '-annot');
+    var beforeLabelHTML = label ? label.innerHTML : '';
+
+    buttons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        buttons.forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+
+        var card = btn.closest('.code-card');
+        card.querySelectorAll('.code-pane').forEach(function(p){ p.classList.remove('visible'); });
+        document.getElementById(btn.dataset.target).classList.add('visible');
+
+        var isAfter = btn.classList.contains('after');
+        var statusEl = card.querySelector('.status-label');
+        if(statusEl){
+          statusEl.innerHTML = isAfter ? '<span class="live-green">● unificado / estable</span>' : beforeLabelHTML;
+        }
+        if(annot){
+          var textSpan = annot.querySelector('span:last-child');
+          if(textSpan){ textSpan.innerHTML = isAfter ? annot.dataset.after : annot.dataset.before; }
+        }
+      });
+    });
+  });
+
+  /* ---- checklist toggles ---- */
+  document.querySelectorAll('.check-item').forEach(function(item){
+    item.addEventListener('click', function(){ item.classList.toggle('checked'); });
+  });
+
+  /* ---- exercise timers ---- */
+  document.querySelectorAll('.timer').forEach(function(timer){
+    var duration = parseInt(timer.dataset.duration, 10);
+    var remaining = duration;
+    var display = timer.querySelector('.timer-display');
+    var toggleBtn = timer.querySelector('[data-action="toggle"]');
+    var resetBtn = timer.querySelector('[data-action="reset"]');
+    var interval = null;
+
+    function fmt(sec){ var m = Math.floor(sec/60), s = sec%60; return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0'); }
+    function tick(){
+      remaining--;
+      if(remaining <= 0){
+        remaining = 0; clearInterval(interval); interval = null;
+        toggleBtn.textContent = 'Iniciar'; timer.classList.add('done');
+      }
+      display.textContent = fmt(remaining);
+    }
+    toggleBtn.addEventListener('click', function(){
+      if(interval){ clearInterval(interval); interval = null; toggleBtn.textContent = 'Reanudar'; }
+      else {
+        if(remaining <= 0) return;
+        timer.classList.remove('done');
+        interval = setInterval(tick, 1000);
+        toggleBtn.textContent = 'Pausar';
+      }
+    });
+    resetBtn.addEventListener('click', function(){
+      clearInterval(interval); interval = null;
+      remaining = duration; display.textContent = fmt(remaining);
+      toggleBtn.textContent = 'Iniciar'; timer.classList.remove('done');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
