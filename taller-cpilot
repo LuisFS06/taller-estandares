@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>De un prompt a un skill de ingeniería</title>
+<title>El ciclo de vida de un skill · Taller 90 min</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,33 +16,28 @@
   --wash:#EAF1FC;
   --line:#D3E0F2;
   --gray:#5B7291;
-  --white:#FFFFFF;
   --rail:76px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
-  background:var(--white);
-  color:var(--ink);
+  background:#fff;color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow:hidden;
+  -webkit-font-smoothing:antialiased;overflow:hidden;
 }
 .deck{position:relative;height:100vh;width:100vw;overflow:hidden}
 .slide{
-  position:absolute;inset:0;
-  display:none;
-  flex-direction:column;
-  padding:clamp(28px,4.4vw,68px) clamp(24px,5vw,88px) 96px calc(var(--rail) + clamp(24px,4vw,60px));
+  position:absolute;inset:0;display:none;flex-direction:column;
+  padding:clamp(26px,4vw,60px) clamp(24px,5vw,80px) 96px calc(var(--rail) + clamp(24px,4vw,56px));
   overflow:auto;
 }
 .slide.active{display:flex}
 @media (prefers-reduced-motion: no-preference){
-  .slide.active > *{animation:rise .42s cubic-bezier(.2,.7,.3,1) both}
+  .slide.active > *{animation:rise .4s cubic-bezier(.2,.7,.3,1) both}
   .slide.active > *:nth-child(2){animation-delay:.05s}
-  .slide.active > *:nth-child(3){animation-delay:.10s}
+  .slide.active > *:nth-child(3){animation-delay:.1s}
   .slide.active > *:nth-child(4){animation-delay:.15s}
-  .slide.active > *:nth-child(5){animation-delay:.20s}
+  .slide.active > *:nth-child(5){animation-delay:.2s}
 }
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
@@ -63,135 +58,150 @@ body{
 
 .eyebrow{
   font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--blue);margin-bottom:18px;
+  text-transform:uppercase;color:var(--blue);margin-bottom:16px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
 }
+.eyebrow .sub{color:var(--gray);border-left:1px solid var(--line);padding-left:14px;letter-spacing:.12em}
 h1{
   font-family:"Space Grotesk",sans-serif;font-weight:700;
-  font-size:clamp(38px,6.4vw,80px);line-height:1.02;letter-spacing:-.03em;
-  color:var(--ink);max-width:16ch;
+  font-size:clamp(36px,6vw,74px);line-height:1.02;letter-spacing:-.03em;max-width:16ch;
 }
 h2{
   font-family:"Space Grotesk",sans-serif;font-weight:700;
-  font-size:clamp(28px,3.8vw,50px);line-height:1.06;letter-spacing:-.025em;
-  margin-bottom:20px;max-width:20ch;
+  font-size:clamp(26px,3.5vw,46px);line-height:1.07;letter-spacing:-.025em;
+  margin-bottom:18px;max-width:22ch;
 }
-h3{
-  font-family:"Space Grotesk",sans-serif;font-weight:500;font-size:17px;
-  letter-spacing:-.01em;color:var(--deep);margin-bottom:10px;
-}
-p{font-size:clamp(15px,1.35vw,19px);line-height:1.55;color:#2C4360;max-width:62ch}
-p + p{margin-top:14px}
-.lead{font-size:clamp(17px,1.7vw,23px);color:var(--deep);max-width:52ch}
+h3{font-family:"Space Grotesk",sans-serif;font-weight:500;font-size:16px;color:var(--deep);margin-bottom:10px}
+p{font-size:clamp(15px,1.3vw,18px);line-height:1.55;color:#2C4360;max-width:62ch}
+p + p{margin-top:12px}
+.lead{font-size:clamp(17px,1.6vw,22px);color:var(--deep);max-width:52ch}
 strong{color:var(--ink);font-weight:600}
-
-.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,48px);align-items:start}
-.stack{display:flex;flex-direction:column;gap:16px}
-
-ul.clean{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:8px}
-ul.clean li{
-  position:relative;padding-left:26px;font-size:clamp(15px,1.35vw,19px);
-  line-height:1.5;color:#2C4360;max-width:56ch;
+.say{
+  margin-top:22px;font-size:clamp(15px,1.35vw,19px);line-height:1.55;
+  color:var(--deep);max-width:62ch;
 }
+.say em{font-style:normal;color:var(--blue)}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.6vw,42px);align-items:start}
+.two.wide{grid-template-columns:1.15fr .85fr}
+.stack{display:flex;flex-direction:column;gap:14px}
+
+ul.clean{list-style:none;display:flex;flex-direction:column;gap:11px;margin-top:6px}
+ul.clean li{position:relative;padding-left:24px;font-size:clamp(14px,1.25vw,18px);line-height:1.5;color:#2C4360;max-width:56ch}
 ul.clean li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:2px;background:var(--sky)}
 ul.clean li b{color:var(--ink);font-weight:600}
 
-.card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:clamp(16px,2vw,26px)}
+.card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:clamp(15px,1.8vw,24px)}
 .card.fill{background:var(--wash);border-color:#CFE0F7}
 
 pre.diagram{
-  font-family:"IBM Plex Mono",monospace;
-  font-size:clamp(11px,1.05vw,14px);line-height:1.5;
-  color:var(--deep);background:var(--wash);
-  border:1px solid var(--line);border-left:3px solid var(--blue);
-  border-radius:8px;padding:18px 22px;overflow:auto;white-space:pre;
+  font-family:"IBM Plex Mono",monospace;font-size:clamp(10.5px,1vw,13.5px);line-height:1.5;
+  color:var(--deep);background:var(--wash);border:1px solid var(--line);border-left:3px solid var(--blue);
+  border-radius:8px;padding:16px 20px;overflow:auto;white-space:pre;
 }
 pre.code{
-  font-family:"IBM Plex Mono",monospace;
-  font-size:clamp(11px,1.05vw,14px);line-height:1.6;
-  color:var(--ink);background:#fff;
-  border:1px solid var(--line);border-radius:8px;padding:16px 20px;overflow:auto;white-space:pre;
+  font-family:"IBM Plex Mono",monospace;font-size:clamp(10.5px,1vw,13.5px);line-height:1.6;
+  color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;
+  padding:14px 18px;overflow:auto;white-space:pre;
 }
 code{font-family:"IBM Plex Mono",monospace;font-size:.92em;color:var(--deep);background:var(--wash);padding:1px 6px;border-radius:4px}
 
-table{border-collapse:collapse;width:100%;font-size:clamp(13px,1.2vw,17px)}
-th{
-  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--gray);text-align:left;font-weight:500;padding:0 14px 10px 0;border-bottom:1px solid var(--line);
-}
-td{padding:12px 14px 12px 0;border-bottom:1px solid #EDF3FC;color:#2C4360}
-
-.tag{
-  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;
-  letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border-radius:999px;
-}
+table{border-collapse:collapse;width:100%;font-size:clamp(13px,1.15vw,16px)}
+th{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gray);text-align:left;font-weight:500;padding:0 14px 10px 0;border-bottom:1px solid var(--line)}
+td{padding:11px 14px 11px 0;border-bottom:1px solid #EDF3FC;color:#2C4360}
+.tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;padding:5px 10px;border-radius:999px}
 .tag.ok{background:var(--wash);color:var(--deep)}
 .tag.bad{background:#fff;color:var(--gray);border:1px solid var(--line)}
 
-.vs{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.vs .h{
-  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;
-  text-transform:uppercase;margin-bottom:10px;color:var(--gray);
-}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vs .h{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:9px;color:var(--gray)}
 .vs .no .h{color:#8FA6C0}
 .vs .yes .h{color:var(--blue)}
 .vs .no pre.code{background:#FBFCFE;color:#7B90AA;border-style:dashed}
 
-.arc{display:flex;flex-direction:column;gap:2px;margin-top:8px}
-.arc .row{
-  display:grid;grid-template-columns:76px 1fr;gap:20px;align-items:center;
-  padding:14px 0;border-top:1px solid #EDF3FC;
-}
+/* agenda arc */
+.arc{display:flex;flex-direction:column;gap:0;margin-top:4px}
+.arc .row{display:grid;grid-template-columns:64px 150px 1fr;gap:18px;align-items:baseline;
+  padding:11px 0;border-top:1px solid #EDF3FC}
 .arc .row:last-child{border-bottom:1px solid #EDF3FC}
-.arc .t{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--blue);letter-spacing:.12em}
-.arc .b{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
-.arc .k{
-  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(18px,2.2vw,30px);
-  letter-spacing:-.02em;color:var(--ink);min-width:9ch;
+.arc .t{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--blue);letter-spacing:.1em}
+.arc .k{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(17px,1.9vw,26px);letter-spacing:-.02em;color:var(--ink)}
+.arc .d{font-size:14px;color:var(--gray);line-height:1.4}
+
+/* exercise: timer + checklist */
+.lab{display:grid;grid-template-columns:250px 1fr;gap:clamp(18px,2.6vw,40px);align-items:start;margin-top:4px}
+.timer{
+  border:1px solid var(--line);border-radius:12px;background:var(--wash);
+  padding:18px;text-align:center;position:sticky;top:0;
 }
-.arc .d{font-size:15px;color:var(--gray)}
+.timer.done{background:#fff;border-color:var(--blue)}
+.timer .lbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gray)}
+.timer-display{
+  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;letter-spacing:-.03em;
+  color:var(--deep);font-variant-numeric:tabular-nums;line-height:1.1;margin:6px 0 12px;
+}
+.timer.done .timer-display{color:var(--blue)}
+.timer .btns{display:flex;gap:8px;justify-content:center}
+.timer button{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  border:1px solid var(--line);background:#fff;color:var(--deep);border-radius:6px;
+  padding:8px 12px;cursor:pointer;
+}
+.timer button:hover{background:var(--wash);border-color:var(--sky)}
+.timer button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+ul.checklist{list-style:none;display:flex;flex-direction:column;gap:8px}
+.check-item{
+  display:flex;gap:12px;align-items:flex-start;cursor:pointer;
+  border:1px solid var(--line);border-radius:8px;padding:11px 14px;background:#fff;
+  font-size:clamp(14px,1.2vw,17px);line-height:1.45;color:#2C4360;transition:background .2s,border-color .2s;
+}
+.check-item:hover{border-color:var(--sky)}
+.check-item .box{
+  flex:0 0 auto;width:17px;height:17px;border:1.5px solid var(--sky);border-radius:4px;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;
+}
+.check-item.checked{background:var(--wash);border-color:#CFE0F7;color:var(--gray)}
+.check-item.checked .box{background:var(--blue);border-color:var(--blue)}
+.check-item.checked .box::after{content:"✓"}
+.check-item.checked .txt{text-decoration:line-through;text-decoration-color:#B9CEE8}
+.check-item code{background:#F3F7FD}
 
 .foot{
   position:fixed;left:0;right:0;bottom:0;height:64px;z-index:6;
-  background:rgba(255,255,255,.94);backdrop-filter:blur(6px);
-  border-top:1px solid var(--line);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-top:1px solid var(--line);
   display:flex;align-items:center;gap:18px;padding:0 22px 0 calc(var(--rail) + 18px);
 }
 .segs{display:flex;gap:4px;flex:1;align-items:center}
 .seg{height:8px;border-radius:2px;background:#E7EFFA;transition:background .3s;position:relative}
-.seg span{
-  position:absolute;top:-16px;left:0;font-family:"IBM Plex Mono",monospace;
-  font-size:10px;letter-spacing:.12em;color:#A9BFD8;text-transform:uppercase;white-space:nowrap;
-}
+.seg span{position:absolute;top:-16px;left:0;font-family:"IBM Plex Mono",monospace;font-size:10px;
+  letter-spacing:.12em;color:#A9BFD8;text-transform:uppercase;white-space:nowrap}
 .seg.on{background:var(--blue)}
 .seg.on span{color:var(--deep)}
 .seg.done{background:var(--sky)}
 .count{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--gray)}
 .nav{display:flex;gap:6px}
-.nav button{
-  width:34px;height:30px;border:1px solid var(--line);background:#fff;border-radius:6px;
-  color:var(--deep);cursor:pointer;font-size:14px;line-height:1;
-}
+.nav button{width:34px;height:30px;border:1px solid var(--line);background:#fff;border-radius:6px;color:var(--deep);cursor:pointer;font-size:14px}
 .nav button:hover{background:var(--wash)}
 .nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 
-.hero{display:flex;flex-direction:column;justify-content:center;flex:1;gap:26px}
-.hero .flow{
-  font-family:"Space Grotesk",sans-serif;font-weight:500;
-  font-size:clamp(15px,1.8vw,22px);color:var(--sky);letter-spacing:.02em;
-}
+.hero{display:flex;flex-direction:column;justify-content:center;flex:1;gap:24px}
+.hero .flow{font-family:"Space Grotesk",sans-serif;font-weight:500;font-size:clamp(15px,1.7vw,21px);color:var(--sky)}
 .hero .flow b{color:var(--blue);font-weight:700}
-.hero .meta{
-  display:flex;gap:34px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;
-  font-size:13px;color:var(--gray);border-top:1px solid var(--line);padding-top:20px;max-width:760px;
-}
+.hero .meta{display:flex;gap:32px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  color:var(--gray);border-top:1px solid var(--line);padding-top:18px;max-width:800px}
 .hero .meta b{display:block;color:var(--deep);font-weight:500;margin-top:6px;font-size:15px}
 
-@media (max-width:820px){
+@media (max-width:900px){
   :root{--rail:0px}
   .rail{display:none}
-  .slide{padding:26px 22px 90px}
-  .two,.vs{grid-template-columns:1fr}
-  .arc .row{grid-template-columns:60px 1fr;gap:12px}
+  .slide{padding:24px 20px 90px}
+  .two,.two.wide,.vs,.lab{grid-template-columns:1fr}
+  .timer{position:static}
+  .arc .row{grid-template-columns:52px 1fr;gap:10px}
+  .arc .d{grid-column:1 / -1}
 }
 </style>
 </head>
@@ -205,182 +215,217 @@ td{padding:12px 14px 12px 0;border-bottom:1px solid #EDF3FC;color:#2C4360}
 
 <main class="deck" id="deck">
 
-  <!-- 1 -->
+  <!-- 1 · portada -->
   <section class="slide active" data-phase="0">
     <div class="hero">
-      <div class="eyebrow">Taller práctico · Copilot Skills</div>
-      <h1>De un prompt bonito a un skill de ingeniería</h1>
-      <div class="flow">crear → probar → romper → mejorar → <b>validar</b></div>
-      <div class="meta">
-        <div>Construyes<b>Un solo skill, de principio a fin</b></div>
-        <div>Necesitas<b>El repo del taller y Copilot</b></div>
-        <div>Te llevas<b>Un skill que verifica su propio trabajo</b></div>
-      </div>
+      <h1>El ciclo de vida de un skill</h1>
+      <div class="flow">crear → romper → entender → arreglar → <b>validar</b> → escalar</div>
     </div>
   </section>
 
-  <!-- 2 -->
+  <!-- 2 · el dolor -->
   <section class="slide" data-phase="0">
-    <div class="eyebrow">Agenda</div>
-    <h2>Cinco pasos sobre el mismo skill</h2>
+    <div class="eyebrow">El punto de partida</div>
+    <h2>Hoy, tus convenciones viven en cada prompt</h2>
+    <div class="two wide">
+      <pre class="code">Implementa el método process de TransactionService.
+
+Recuerda: usa type hints en todo, docstring solo si
+es API pública, inyecta las dependencias, no captures
+Exception genérica, y agrega tests con pytest siguiendo
+el estilo de tests/services/. Ah, y no cambies la firma
+pública.</pre>
+      <div class="card fill">
+        <h3>El problema no es que falle</h3>
+        <p>Funciona. El problema es que <strong>lo escribes otra vez mañana</strong>, y tu compañero escribe una versión distinta, y nadie sabe cuál es la buena.</p>
+      </div>
+    </div>
+    <p class="say">Seguramente tienes un prompt parecido guardado en algún lado. <em>¿Y si esas reglas vivieran en el repositorio en vez de en tu memoria?</em> Eso es un skill, y en los próximos 90 minutos vas a construir uno.</p>
+  </section>
+
+  <!-- 3 · agenda -->
+  <section class="slide" data-phase="0">
+    <div class="eyebrow">Agenda <span class="sub">cada paso responde la pregunta del anterior</span></div>
+    <h2>Seis movimientos sobre el mismo skill</h2>
     <div class="arc">
-      <div class="row"><div class="t">01</div><div class="b"><span class="k">Entender</span><span class="d">Qué es un skill y cuándo se carga</span></div></div>
-      <div class="row"><div class="t">02</div><div class="b"><span class="k">Crear</span><span class="d">Tu primer SKILL.md sobre un repo real</span></div></div>
-      <div class="row"><div class="t">03</div><div class="b"><span class="k">Romper</span><span class="d">Prompts que exponen dónde falla</span></div></div>
-      <div class="row"><div class="t">04</div><div class="b"><span class="k">Mejorar</span><span class="d">Description como routing, instructions como comportamiento</span></div></div>
-      <div class="row"><div class="t">05</div><div class="b"><span class="k">Validar</span><span class="d">Scripts, referencias y un bucle de corrección</span></div></div>
+      <div class="row"><div class="t">12 min</div><div class="k">Crear</div><div class="d">Un SKILL.md mínimo que ya cambia el comportamiento</div></div>
+      <div class="row"><div class="t">10 min</div><div class="k">Romper</div><div class="d">Prompts diseñados para que falle donde no lo esperas</div></div>
+      <div class="row"><div class="t">5 min</div><div class="k">Entender</div><div class="d">Los dos únicos tipos de fallo que vas a ver</div></div>
+      <div class="row"><div class="t">10 min</div><div class="k">Arreglar</div><div class="d">Description y instructions, reescritas con evidencia</div></div>
+      <div class="row"><div class="t">12 min</div><div class="k">Validar</div><div class="d">Un script que dice si el trabajo está bien, y un bucle</div></div>
+      <div class="row"><div class="t">8 min</div><div class="k">Escalar</div><div class="d">De un skill suelto a un harness completo</div></div>
     </div>
-    <p style="margin-top:24px">Al final ese conjunto tiene nombre: <strong>harness engineering</strong>.</p>
+    <p class="say">Fíjate en algo: <em>nunca creamos un skill nuevo.</em> Es el mismo archivo, seis veces mejor. Cada bloque existe porque el anterior dejó un problema sin resolver.</p>
   </section>
 
-  <!-- 3 -->
+  <!-- 4 · qué es -->
   <section class="slide" data-phase="1">
-    <div class="eyebrow">01 · Entender</div>
-    <h2>Qué problema resuelve un skill</h2>
+    <div class="eyebrow">01 · Crear <span class="sub">Antes de tocar nada</span></div>
+    <h2>Un skill son dos decisiones</h2>
     <div class="two">
-      <div class="stack">
-        <pre class="diagram">Prompt largo y repetitivo
-        ↓
-      Skill
-        ↓
-Prompt pequeño + comportamiento consistente</pre>
-        <p>Las convenciones dejan de vivir en tu cabeza y en cada mensaje que escribes. Pasan a estar en el repositorio.</p>
-      </div>
-      <div class="card">
-        <h3>Tres cosas por ahora</h3>
-        <ul class="clean">
-          <li><b>Qué es</b> un skill</li>
-          <li><b>Cuándo</b> se carga</li>
-          <li><b>Estructura mínima</b> de SKILL.md</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4 -->
-  <section class="slide" data-phase="1">
-    <div class="eyebrow">01 · Entender</div>
-    <h2>La estructura mínima</h2>
-    <div class="two">
-      <pre class="diagram">.github/
-└── skills/
-    └── python-development/
-        └── SKILL.md</pre>
       <pre class="code">---
 name: python-development
-description: ...
+description: Cuándo debe activarse
 ---
 # Instructions
-...</pre>
-    </div>
-    <p style="margin-top:24px">Dos partes con dos trabajos distintos: la <strong>description</strong> decide cuándo entra el skill, las <strong>instructions</strong> deciden qué hace cuando entra.</p>
-  </section>
-
-  <!-- 5 -->
-  <section class="slide" data-phase="2">
-    <div class="eyebrow">02 · Crear</div>
-    <h2>Tu reto</h2>
-    <p class="lead">Crear un skill que ayude a Copilot a implementar funciones Python siguiendo las convenciones de este proyecto.</p>
-    <div class="two" style="margin-top:28px">
-      <pre class="diagram">repo/
-├── src/
-├── tests/
-└── .github/
-    └── skills/
-        └── TODO</pre>
-      <div class="card fill">
-        <h3>Convenciones del proyecto</h3>
-        <ul class="clean">
-          <li>Type hints obligatorios</li>
-          <li>Docstrings solo para APIs públicas</li>
-          <li>Dependency injection</li>
-          <li>Nada de broad exceptions</li>
-          <li>pytest para los tests</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6 -->
-  <section class="slide" data-phase="2">
-    <div class="eyebrow">02 · Crear</div>
-    <h2>Cómo sabes que funciona</h2>
-    <pre class="code" style="max-width:62ch">Implement the TransactionService.process method.</pre>
-    <p style="margin-top:22px" class="lead">El agente aplica las reglas <strong>sin que tú las repitas</strong> en el prompt.</p>
-    <div class="card" style="margin-top:26px;max-width:66ch">
-      <p>Escribe la primera versión rápido y sin pulirla. En el siguiente paso vas a buscarle los fallos, y para eso necesitas una versión real, no una perfecta.</p>
-    </div>
-  </section>
-
-  <!-- 7 -->
-  <section class="slide" data-phase="3">
-    <div class="eyebrow">03 · Romper</div>
-    <h2>Cinco prompts contra tu skill</h2>
-    <div class="two">
-      <pre class="code">1. Implement this service method.
-2. Refactor this module.
-3. Explain this function.
-4. Add unit tests.
-5. Update the README.</pre>
+Qué hacer cuando se activa</pre>
       <div class="card">
-        <h3>Para cada uno, responde</h3>
         <ul class="clean">
-          <li>¿Debería activarse el skill?</li>
-          <li>¿Se activó?</li>
-          <li>¿Hizo lo correcto?</li>
+          <li><b>description →</b> se lee siempre, en cada petición. Decide si este skill entra o no.</li>
+          <li><b>instructions →</b> solo se cargan si entró. Definen el comportamiento.</li>
         </ul>
+        <p style="margin-top:14px">Guárdate esa separación: todo lo que falle hoy va a ser una de las dos.</p>
       </div>
     </div>
+    <p class="say">Es tentador escribirlo a mano, pero no hace falta. Hay un comando que arma el andamiaje.</p>
   </section>
 
-  <!-- 8 -->
+  <!-- 5 · /create-skill -->
+  <section class="slide" data-phase="1">
+    <div class="eyebrow">01 · Crear <span class="sub">El comando</span></div>
+    <h2>/create-skill hace el andamiaje</h2>
+    <div class="two wide">
+      <div class="stack">
+        <pre class="code">/create-skill python-development</pre>
+        <pre class="diagram">.github/
+└── skills/
+    └── python-development/
+        ├── SKILL.md       ← name + description + instructions
+        ├── references/    ← vacío, lo llenas tú
+        └── scripts/       ← vacío por ahora</pre>
+      </div>
+      <div class="card fill">
+        <h3>Te pregunta tres cosas</h3>
+        <ul class="clean">
+          <li>Qué tarea cubre</li>
+          <li>Cuándo <b>no</b> debe activarse</li>
+          <li>Qué archivos del repo son su fuente de verdad</li>
+        </ul>
+        <p style="margin-top:12px">Con eso genera una primera <code>description</code>.</p>
+      </div>
+    </div>
+    <p class="say">Esa primera description te va a parecer razonable. Spoiler: <em>la vas a reescribir en veinte minutos</em>, y vas a entender por qué. Ahora te toca, doce minutos para tener la v1 andando.</p>
+  </section>
+
+  <!-- 6 · EJERCICIO 1 -->
+  <section class="slide" data-phase="1">
+    <div class="eyebrow">Ejercicio 1 · Crear</div>
+    <h2>Que aplique las convenciones sin que tú las repitas</h2>
+    <div class="lab">
+      <div class="timer" data-duration="720">
+        <div class="lbl">Tiempo</div>
+        <div class="timer-display">12:00</div>
+        <div class="btns">
+          <button data-action="toggle">Iniciar</button>
+          <button data-action="reset">Reset</button>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li class="check-item"><span class="box"></span><span class="txt">Corre <code>/create-skill python-development</code> en el repo del taller</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Escribe las convenciones en <b>instructions</b>: type hints, docstrings solo en API pública, dependency injection, sin <code>except Exception</code>, tests con pytest</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Apunta <code>references/conventions.md</code> a un módulo del repo que ya lo haga bien</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Prueba con: <code>Implement the TransactionService.process method.</code></span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Confirma que el código generado cumple las cinco reglas <b>sin haberlas mencionado</b> en el prompt</span></li>
+      </ul>
+    </div>
+    <p class="say">No lo pulas. Necesitas una v1 real, no una perfecta: dentro de un rato le vamos a buscar las grietas y conviene que las tenga.</p>
+  </section>
+
+  <!-- 7 · puente romper -->
+  <section class="slide" data-phase="2">
+    <div class="eyebrow">02 · Romper</div>
+    <h2>Funciona con el prompt que tú elegiste</h2>
+    <p class="lead">Es el caso más fácil que existe: uno que describe exactamente lo que el skill sabe hacer. En un repo real nadie escribe así.</p>
+    <div class="card" style="margin-top:24px;max-width:66ch">
+      <h3>Lo que vamos a averiguar</h3>
+      <ul class="clean">
+        <li>Si se activa cuando <b>no</b> debería</li>
+        <li>Si se queda callado cuando <b>sí</b> debería entrar</li>
+        <li>Si entra pero ignora la mitad de las reglas</li>
+      </ul>
+    </div>
+    <p class="say">Diez minutos, cinco prompts. La regla de este ejercicio es incómoda: <em>anota lo que pasa y no arregles nada todavía.</em></p>
+  </section>
+
+  <!-- 8 · EJERCICIO 2 -->
+  <section class="slide" data-phase="2">
+    <div class="eyebrow">Ejercicio 2 · Romper</div>
+    <h2>Cinco prompts contra tu skill</h2>
+    <div class="lab">
+      <div class="timer" data-duration="600">
+        <div class="lbl">Tiempo</div>
+        <div class="timer-display">10:00</div>
+        <div class="btns">
+          <button data-action="toggle">Iniciar</button>
+          <button data-action="reset">Reset</button>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li class="check-item"><span class="box"></span><span class="txt"><code>Refactor this module.</code> — debería entrar</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt"><code>Explain this function.</code> — <b>no</b> debería entrar</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt"><code>Add unit tests.</code> — debería entrar</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt"><code>Update the README.</code> — <b>no</b> debería entrar</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt"><code>Fix the failing test in test_transactions.py</code> — debería entrar y respetar la firma pública</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Para cada uno anota tres cosas: <b>esperado / real / qué hizo mal</b></span></li>
+      </ul>
+    </div>
+    <p class="say">Si te dan ganas de abrir el SKILL.md a mitad del ejercicio, aguanta. Esas notas son el material del siguiente bloque.</p>
+  </section>
+
+  <!-- 9 · entender -->
   <section class="slide" data-phase="3">
-    <div class="eyebrow">03 · Romper</div>
-    <h2>Anota lo que esperabas y lo que pasó</h2>
+    <div class="eyebrow">03 · Entender <span class="sub">5 min</span></div>
+    <h2>Todo lo que anotaste cae en dos cajas</h2>
     <table>
-      <thead><tr><th>Prompt</th><th>Expected</th><th>Actual</th></tr></thead>
+      <thead><tr><th>Prompt</th><th>Esperado</th><th>Real</th><th>Tipo de fallo</th></tr></thead>
       <tbody>
-        <tr><td>Implement service</td><td><span class="tag ok">Skill</span></td><td><span class="tag ok">Skill</span></td></tr>
-        <tr><td>Explain code</td><td><span class="tag bad">No skill</span></td><td><span class="tag ok">Skill</span></td></tr>
-        <tr><td>Add tests</td><td><span class="tag ok">Skill</span></td><td><span class="tag bad">No skill</span></td></tr>
+        <tr><td>Refactor this module</td><td><span class="tag ok">Entra</span></td><td><span class="tag ok">Entra</span></td><td>—</td></tr>
+        <tr><td>Explain this function</td><td><span class="tag bad">No entra</span></td><td><span class="tag ok">Entra</span></td><td><strong>Routing</strong></td></tr>
+        <tr><td>Add unit tests</td><td><span class="tag ok">Entra</span></td><td><span class="tag bad">No entra</span></td><td><strong>Routing</strong></td></tr>
+        <tr><td>Fix the failing test</td><td><span class="tag ok">Entra</span></td><td><span class="tag ok">Entra</span></td><td><strong>Comportamiento</strong></td></tr>
       </tbody>
     </table>
-    <p style="margin-top:26px" class="lead">Cada fila que no cuadra es un fallo concreto que puedes arreglar. Casi siempre son de dos tipos.</p>
+    <div class="two" style="margin-top:26px">
+      <div class="card fill"><h3>Routing</h3><p>Entró cuando no tocaba, o no entró cuando sí. Se arregla en la <strong>description</strong>.</p></div>
+      <div class="card fill"><h3>Comportamiento</h3><p>Entró bien pero hizo lo que le dio la gana. Se arregla en las <strong>instructions</strong>.</p></div>
+    </div>
+    <p class="say">Ponle etiqueta a cada fila de tus notas. Cuando sabes de qué tipo es el fallo, ya sabes qué parte del archivo tocar.</p>
   </section>
 
-  <!-- 9 -->
-  <section class="slide" data-phase="4">
-    <div class="eyebrow">04 · Mejorar</div>
-    <h2>Description = routing</h2>
+  <!-- 10 · description -->
+  <section class="slide" data-phase="3">
+    <div class="eyebrow">03 · Entender <span class="sub">Fallo de routing</span></div>
+    <h2>La description no describe: enruta</h2>
     <div class="vs">
       <div class="no">
-        <div class="h">Demasiado ambiguo</div>
+        <div class="h">Cabe en todo, entra en todo</div>
         <pre class="code">description: Helps with Python.</pre>
       </div>
       <div class="yes">
-        <div class="h">Dice cuándo activarse</div>
+        <div class="h">Dice cuándo sí y cuándo no</div>
         <pre class="code">description: >
   Implements and refactors Python business
   logic and unit tests following the
   repository's development conventions.
   Use when modifying Python production
-  code or tests.</pre>
+  code or tests. Do not use for
+  explanations, docs or configuration.</pre>
       </div>
     </div>
-    <p style="margin-top:24px">La description no describe el skill: <strong>enruta</strong>. Es lo que se lee para decidir si este skill entra en juego.</p>
+    <p class="say">Aquí hay algo contraintuitivo: lo que más arregla el routing casi nunca es explicar mejor qué hace el skill, sino <strong>decir cuándo no aplica</strong>.</p>
   </section>
 
-  <!-- 10 -->
-  <section class="slide" data-phase="4">
-    <div class="eyebrow">04 · Mejorar</div>
-    <h2>Instructions = comportamiento</h2>
+  <!-- 11 · instructions -->
+  <section class="slide" data-phase="3">
+    <div class="eyebrow">03 · Entender <span class="sub">Fallo de comportamiento</span></div>
+    <h2>Las instructions son pasos, no adjetivos</h2>
     <div class="vs">
       <div class="no">
-        <div class="h">No es accionable</div>
+        <div class="h">No se puede comprobar</div>
         <pre class="code">Write clean code.</pre>
       </div>
       <div class="yes">
-        <div class="h">Pasos comprobables</div>
+        <div class="h">Se puede comprobar paso a paso</div>
         <pre class="code">Before modifying code:
 1. Inspect related interfaces.
 2. Identify existing patterns in
@@ -391,187 +436,257 @@ description: ...
 5. Run the relevant test suite.</pre>
       </div>
     </div>
+    <p class="say">Un buen filtro: si no puedes decir si un paso se cumplió mirando el resultado, todavía es un adjetivo. Diez minutos para reescribir las dos partes con tus notas delante.</p>
   </section>
 
-  <!-- 11 -->
+  <!-- 12 · EJERCICIO 3 -->
   <section class="slide" data-phase="4">
-    <div class="eyebrow">04 · Mejorar</div>
-    <h2>Reescribe con los fallos delante</h2>
-    <div class="two">
-      <pre class="diagram">Skill v1
-   ↓
-tests
-   ↓
-Skill v2</pre>
-      <div class="card fill">
-        <p class="lead">Vuelve a pasar los cinco prompts sobre la v2 y compara la tabla. Un skill se mejora con evidencia, no con intuición.</p>
+    <div class="eyebrow">Ejercicio 3 · Arreglar</div>
+    <h2>Skill v2, con evidencia y no con intuición</h2>
+    <div class="lab">
+      <div class="timer" data-duration="600">
+        <div class="lbl">Tiempo</div>
+        <div class="timer-display">10:00</div>
+        <div class="btns">
+          <button data-action="toggle">Iniciar</button>
+          <button data-action="reset">Reset</button>
+        </div>
       </div>
+      <ul class="checklist">
+        <li class="check-item"><span class="box"></span><span class="txt">Reescribe la <b>description</b>: qué hace, cuándo usarla y una frase de <code>Do not use for…</code></span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Convierte cada regla vaga de instructions en un <b>paso numerado</b></span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Añade el caso que te falló: si ignoró la firma pública, ponlo como paso explícito</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Vuelve a pasar <b>los cinco prompts</b> del ejercicio anterior</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Compara tu tabla v1 contra v2: ¿cuántas filas se arreglaron? ¿alguna se rompió?</span></li>
+      </ul>
     </div>
+    <p class="say">No busques la perfección: con que los cinco prompts enruten bien, seguimos. Lo interesante viene después.</p>
   </section>
 
-  <!-- 12 -->
+  <!-- 13 · puente validar -->
   <section class="slide" data-phase="5">
-    <div class="eyebrow">05 · Validar</div>
-    <h2>Dice que terminó, pero rompió los tests</h2>
-    <p class="lead">El código que genera es razonable. El problema es otro: no tiene forma de saber si lo que hizo funciona.</p>
-    <div class="card" style="margin-top:28px;max-width:68ch">
-      <h3>La pregunta de este bloque</h3>
-      <p>¿Cómo le damos una <strong>manera objetiva</strong> de verificar su propio trabajo?</p>
+    <div class="eyebrow">04 · Validar</div>
+    <h2>Enruta bien, escribe bien… y dice que terminó con los tests rotos</h2>
+    <p class="lead">Este fallo no es de routing ni de instructions. Es que <strong>no tiene forma de saber si lo que hizo funciona</strong>. Solo puede afirmarlo.</p>
+    <div class="card" style="margin-top:26px;max-width:68ch">
+      <h3>La pregunta que cierra el taller</h3>
+      <p>¿Cómo le damos una manera <strong>objetiva</strong> de comprobar su propio trabajo, sin que tú tengas que revisarlo cada vez?</p>
     </div>
+    <p class="say">Este es el momento del taller donde esto deja de ser un prompt guardado y empieza a ser ingeniería.</p>
   </section>
 
-  <!-- 13 -->
+  <!-- 14 · el script -->
   <section class="slide" data-phase="5">
-    <div class="eyebrow">05 · Validar</div>
-    <h2>El skill deja de ser un archivo y pasa a ser una carpeta</h2>
-    <div class="two">
+    <div class="eyebrow">04 · Validar <span class="sub">La pieza que falta</span></div>
+    <h2>Un skill puede llamar a un script</h2>
+    <div class="two wide">
       <pre class="diagram">python-development/
 ├── SKILL.md
-├── scripts/
-│   └── validate.py
-└── references/
-    └── conventions.md</pre>
-      <div class="card">
-        <h3>El script que vas a usar</h3>
+├── references/
+│   └── conventions.md     ← qué es correcto aquí
+└── scripts/
+    └── validate.py        ← ruff + pytest + mypy</pre>
+      <div class="stack">
         <pre class="code">python scripts/validate.py</pre>
-        <p style="margin-top:12px">Por dentro ejecuta <code>ruff</code>, <code>pytest</code> y <code>mypy</code>. Ya viene listo en el repo.</p>
+        <div class="card fill">
+          <p>Ya viene en el repo. Devuelve <strong>0 o el error concreto</strong>: eso convierte una opinión en un hecho.</p>
+        </div>
       </div>
     </div>
+    <p class="say">Tener el script no basta. Casi todo el mundo lo copia y sigue pasando lo mismo, porque falta escribir el bucle en el SKILL.md.</p>
   </section>
 
-  <!-- 14 -->
+  <!-- 15 · el bucle -->
   <section class="slide" data-phase="5">
-    <div class="eyebrow">05 · Validar</div>
-    <h2>Modificar, validar, corregir</h2>
+    <div class="eyebrow">04 · Validar <span class="sub">El bucle</span></div>
+    <h2>Modificar, validar, corregir, repetir</h2>
     <div class="two">
-      <pre class="diagram">Understand
+      <pre class="diagram">Entender
     ↓
-Modify
+Modificar
     ↓
-Validate
-    ↓
-Failure?
- ┌──┴──┐
- yes   no
- ↓      ↓
-Fix    Done
- │
- └──────→ Validate</pre>
+Validar ←──────┐
+    ↓          │
+ ¿falla?       │
+ ┌──┴──┐       │
+ sí    no      │
+ ↓      ↓      │
+Corregir Listo │
+ └─────────────┘</pre>
       <pre class="code">## Validation workflow
 After modifying Python code:
 1. Run `python scripts/validate.py`.
 2. Inspect any failures.
 3. Correct the implementation.
 4. Run validation again.
-5. Do not consider the task complete
+5. Do not report the task as complete
    until validation passes.</pre>
     </div>
-    <p style="margin-top:22px" class="lead">Ya no solo tiene instrucciones: tiene un <strong>mecanismo para comprobar su trabajo</strong>.</p>
+    <p class="say">El paso 5 es el que cambia todo: <strong>"listo" deja de ser una opinión</strong>. Doce minutos para cerrar ese bucle en tu skill.</p>
   </section>
 
-  <!-- 15 -->
+  <!-- 16 · EJERCICIO 4 -->
   <section class="slide" data-phase="5">
-    <div class="eyebrow">Reto final</div>
-    <h2>Un prompt que no has visto</h2>
-    <pre class="code" style="max-width:60ch">Implement the customer segmentation service
+    <div class="eyebrow">Ejercicio 4 · Validar</div>
+    <h2>Cierra el bucle en tu skill</h2>
+    <div class="lab">
+      <div class="timer" data-duration="720">
+        <div class="lbl">Tiempo</div>
+        <div class="timer-display">12:00</div>
+        <div class="btns">
+          <button data-action="toggle">Iniciar</button>
+          <button data-action="reset">Reset</button>
+        </div>
+      </div>
+      <ul class="checklist">
+        <li class="check-item"><span class="box"></span><span class="txt">Copia <code>validate.py</code> del repo a <code>scripts/</code> de tu skill</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Añade la sección <b>Validation workflow</b> al SKILL.md, con los cinco pasos</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Deja explícito qué <b>no</b> hacer: no marcar como completo con validación en rojo</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Rompe un test a propósito y pide un cambio: ¿lo detecta y lo corrige, o lo ignora?</span></li>
+        <li class="check-item"><span class="box"></span><span class="txt">Si lo ignoró, haz el paso más literal: nombra el comando exacto en la instrucción</span></li>
+      </ul>
+    </div>
+    <p class="say">Si nunca corre el script, el problema está en cómo lo escribiste, no en el script. Las instrucciones vagas se ignoran; los comandos exactos se ejecutan.</p>
+  </section>
+
+  <!-- 17 · EJERCICIO 5 -->
+  <section class="slide" data-phase="6">
+    <div class="eyebrow">Ejercicio 5 · Prueba final</div>
+    <h2>Un caso que no has visto</h2>
+    <div class="lab">
+      <div class="timer" data-duration="360">
+        <div class="lbl">Tiempo</div>
+        <div class="timer-display">06:00</div>
+        <div class="btns">
+          <button data-action="toggle">Iniciar</button>
+          <button data-action="reset">Reset</button>
+        </div>
+      </div>
+      <div class="stack">
+        <pre class="code">Implement the customer segmentation service
 and add its corresponding tests.</pre>
-    <div class="two" style="margin-top:28px">
-      <div class="card fill">
-        <h3>Comprueba cuatro cosas</h3>
-        <ul class="clean">
-          <li>¿Se activó el skill?</li>
-          <li>¿Siguió el workflow?</li>
-          <li>¿Pasó la validación?</li>
-          <li>¿Se detuvo cuando tocaba?</li>
+        <ul class="checklist">
+          <li class="check-item"><span class="box"></span><span class="txt">¿Se activó el skill sin pistas en el prompt?</span></li>
+          <li class="check-item"><span class="box"></span><span class="txt">¿Siguió los pasos numerados antes de escribir código?</span></li>
+          <li class="check-item"><span class="box"></span><span class="txt">¿Corrió la validación por su cuenta?</span></li>
+          <li class="check-item"><span class="box"></span><span class="txt">¿Se detuvo hasta que pasó, en vez de declarar victoria?</span></li>
         </ul>
       </div>
+    </div>
+    <p class="say">Cuatro síes seguidos y ya no tienes un prompt guardado: tienes un skill de ingeniería.</p>
+  </section>
+
+  <!-- 18 · recap -->
+  <section class="slide" data-phase="7">
+    <div class="eyebrow">05 · Escalar <span class="sub">Recapitulando</span></div>
+    <h2>Lo que ganó tu skill en 90 minutos</h2>
+    <div class="arc">
+      <div class="row"><div class="t">v1</div><div class="k">Reglas</div><div class="d">Las convenciones dejaron de repetirse en cada prompt</div></div>
+      <div class="row"><div class="t">v2</div><div class="k">Routing</div><div class="d">Sabe cuándo entra y cuándo no le toca</div></div>
+      <div class="row"><div class="t">v2</div><div class="k">Pasos</div><div class="d">Comportamiento verificable en lugar de adjetivos</div></div>
+      <div class="row"><div class="t">v3</div><div class="k">Contexto</div><div class="d">references/ apunta a la verdad del repo</div></div>
+      <div class="row"><div class="t">v3</div><div class="k">Herramienta</div><div class="d">scripts/ le da un hecho, no una impresión</div></div>
+      <div class="row"><div class="t">v3</div><div class="k">Bucle</div><div class="d">Detecta su error y lo corrige antes de entregar</div></div>
+    </div>
+    <p class="say">Ninguna de esas seis piezas es impresionante por separado. Juntas ya son otra cosa, y esa otra cosa tiene nombre.</p>
+  </section>
+
+  <!-- 19 · qué es un harness -->
+  <section class="slide" data-phase="7">
+    <div class="eyebrow">05 · Escalar <span class="sub">Antes de la arquitectura</span></div>
+    <h2>Qué es un harness</h2>
+    <p class="lead">Es todo lo que rodea al skill para que acierte más veces: <strong>de dónde saca el contexto</strong>, <strong>qué límites no puede cruzar</strong> y <strong>cómo comprueba lo que hizo</strong>.</p>
+    <div class="two" style="margin-top:26px">
+      <div class="card fill">
+        <h3>Contexto</h3>
+        <ul class="clean">
+          <li>Archivos de <b>planning</b>: qué se está construyendo y en qué orden</li>
+          <li>Estado en <b>JSON o markdown</b> versionado con el repo</li>
+          <li><b>references/</b>: cómo se hacen las cosas aquí</li>
+          <li>Decisiones ya tomadas, para no volver a discutirlas</li>
+        </ul>
+      </div>
+      <div class="card fill">
+        <h3>Guardrails</h3>
+        <ul class="clean">
+          <li>Qué archivos <b>no</b> se tocan</li>
+          <li>Qué hay que preguntar antes de hacer</li>
+          <li>Qué debe estar en verde para poder cerrar</li>
+          <li>Cuándo detenerse en vez de improvisar</li>
+        </ul>
+      </div>
+    </div>
+    <p class="say">Hoy construiste una versión pequeña de las tres cosas: <em>references</em> fue tu contexto, los pasos numerados fueron tus guardrails y <em>validate.py</em> fue tu comprobación.</p>
+  </section>
+
+  <!-- 20 · arquitectura de ejemplo -->
+  <section class="slide" data-phase="7">
+    <div class="eyebrow">05 · Escalar <span class="sub">Una arquitectura posible</span></div>
+    <h2>Así se ve cuando hay más de un skill</h2>
+    <pre class="diagram">                    Petición del desarrollador
+                              │
+                    ┌─────────▼──────────┐        ┌──────────────────┐
+                    │  Skill de entrada  │ ◄─────► │  Contexto        │
+                    │  lee el estado y   │         │  planning.json   │
+                    │  decide qué toca   │         │  decisions.md    │
+                    └─────────┬──────────┘         │  references/     │
+                              │                    └──────────────────┘
+        ┌──────────┬──────────┼──────────┬──────────┐
+        ▼          ▼          ▼          ▼          ▼
+     design    implement    testing    review    release
+      skill      skill       skill      skill     skill
+        │          │          │          │          │
+        └──────────┴──────────┼──────────┴──────────┘
+                              ▼
+                    ┌───────────────────┐
+                    │    Guardrails     │  qué no se toca
+                    └─────────┬─────────┘  qué exige aprobación
+                              ▼
+                    scripts/ → validación
+                              │
+                      ¿pasa? ─── no ──┐
+                         │            │
+                        sí        corrige
+                         ▼            │
+                     Entregado ◄──────┘</pre>
+    <p class="say">El estado se actualiza al terminar cada paso, así que la siguiente petición ya sabe en qué punto del proyecto está. Nadie tiene que explicarlo otra vez.</p>
+  </section>
+
+  <!-- 21 · no es la única -->
+  <section class="slide" data-phase="7">
+    <div class="eyebrow">05 · Escalar</div>
+    <h2>Y esta no es la única forma de armarlo</h2>
+    <p class="lead">Ese diagrama es <strong>un ejemplo</strong>, no una plantilla. Hay equipos que no necesitan un skill de entrada, otros que viven casi todo en el contexto, otros donde el harness es un solo skill con una validación muy buena.</p>
+    <div class="two" style="margin-top:26px">
       <div class="card">
-        <p>Es la prueba de fuego del skill que has construido: un caso nuevo, sin pistas en el prompt.</p>
+        <h3>Lo que sí conviene preguntarse</h3>
+        <ul class="clean">
+          <li>¿Qué contexto se repite en cada petición?</li>
+          <li>¿Qué error nos cuesta caro y podría comprobarse solo?</li>
+          <li>¿Dónde queremos que se detenga y pregunte?</li>
+        </ul>
+      </div>
+      <div class="card fill">
+        <p class="lead">Las respuestas cambian por equipo, por repo y por proyecto. El harness es <strong>tuyo</strong>: lo defines según lo que te duele hoy.</p>
       </div>
     </div>
+    <p class="say">Empieza por el skill que ya tienes y añade una pieza cuando un fallo real lo pida. Eso siempre gana a diseñar la arquitectura completa el primer día.</p>
   </section>
 
-  <!-- 16 -->
-  <section class="slide" data-phase="6">
-    <div class="eyebrow">Cierre</div>
-    <h2>Lo que acabas de construir</h2>
-    <pre class="diagram">                  Agent
-                    │
-        ┌───────────┼───────────┐
-        ↓           ↓           ↓
-   Instructions   Skill       Context
-
-        ↓           ↓           ↓
-      Tools      Scripts    References
-                    │
-                    ↓
-               Validation
-                    │
-                    ↓
-                Feedback</pre>
-  </section>
-
-  <!-- 17 -->
-  <section class="slide" data-phase="6">
-    <div class="eyebrow">Cierre</div>
-    <h2>El recorrido del taller</h2>
-    <div class="two">
-      <div class="stack">
-        <pre class="diagram">Prompt
-   ↓
-Skill</pre>
-        <pre class="diagram">Skill
- + context
- + tools
- + validation</pre>
-      </div>
-      <pre class="diagram">              ┌───────────────┐
-              │     Agent     │
-              └───────┬───────┘
-                      │
-       ┌──────────────┼──────────────┐
-       │              │              │
-    Skills         Context         Tools
-       │              │              │
-       └──────────────┼──────────────┘
-                      │
-                 Validation
-                      │
-                 Feedback loop
-                      │
-                  Evaluation</pre>
+  <!-- 22 · gracias -->
+  <section class="slide" data-phase="7">
+    <div class="hero">
+      <div class="eyebrow">Fin del taller</div>
+      <h1>Gracias</h1>
+      <p class="lead">¿Preguntas?</p>
     </div>
-  </section>
-
-  <!-- 18 -->
-  <section class="slide" data-phase="6">
-    <div class="eyebrow">Harness Engineering</div>
-    <h2>La idea, en una frase</h2>
-    <p style="font-size:clamp(19px,2.4vw,32px);line-height:1.35;color:var(--deep);max-width:26ch;font-family:'Space Grotesk',sans-serif;font-weight:500;letter-spacing:-.02em">
-      No hacer al agente fiable escribiendo el prompt perfecto, sino construir un sistema alrededor que haga más probable que decida bien y que pueda detectar y corregir sus errores.
-    </p>
-  </section>
-
-  <!-- 19 -->
-  <section class="slide" data-phase="6">
-    <div class="eyebrow">Cierre</div>
-    <h2>Todo esto son piezas de un harness</h2>
-    <pre class="diagram">description
-instructions
-references
-scripts
-validation
-tests
-          ↓
-    son piezas de un harness.</pre>
-    <p style="margin-top:26px" class="lead">Un skill fue solo la puerta de entrada. El resto del trabajo es construir el entorno donde ese skill puede acertar.</p>
   </section>
 
 </main>
 
 <footer class="foot">
   <div class="segs" id="segs" aria-hidden="true"></div>
-  <div class="count" id="count">01 / 19</div>
+  <div class="count" id="count">01 / 22</div>
   <div class="nav">
     <button id="prev" aria-label="Anterior">←</button>
     <button id="next" aria-label="Siguiente">→</button>
@@ -583,13 +698,14 @@ tests
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
   var i = 0;
   var phases = [
-    {k:'Inicio', w:1},
-    {k:'Entender', w:1},
-    {k:'Crear', w:1},
-    {k:'Romper', w:1},
-    {k:'Mejorar', w:1},
-    {k:'Validar', w:1},
-    {k:'Harness', w:1}
+    {k:'Inicio', w:5},
+    {k:'Crear', w:12},
+    {k:'Romper', w:10},
+    {k:'Entender', w:5},
+    {k:'Arreglar', w:10},
+    {k:'Validar', w:12},
+    {k:'Prueba', w:6},
+    {k:'Escalar', w:8}
   ];
   var segsEl = document.getElementById('segs');
   phases.forEach(function(p){
@@ -620,6 +736,8 @@ tests
   document.getElementById('prev').addEventListener('click', function(){ show(i-1); });
 
   document.addEventListener('keydown', function(e){
+    var t = e.target.tagName;
+    if(t === 'BUTTON') return;
     if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); show(i+1); }
     if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); show(i-1); }
     if(e.key==='Home'){ show(0); }
@@ -634,6 +752,54 @@ tests
     if(Math.abs(dx) > 60){ show(dx < 0 ? i+1 : i-1); }
     x0 = null;
   }, {passive:true});
+
+  /* checklist */
+  document.querySelectorAll('.check-item').forEach(function(item){
+    item.addEventListener('click', function(){ item.classList.toggle('checked'); });
+  });
+
+  /* timers */
+  document.querySelectorAll('.timer').forEach(function(timer){
+    var duration = parseInt(timer.dataset.duration, 10);
+    var remaining = duration;
+    var display = timer.querySelector('.timer-display');
+    var toggleBtn = timer.querySelector('[data-action="toggle"]');
+    var resetBtn = timer.querySelector('[data-action="reset"]');
+    var interval = null;
+
+    function fmt(sec){
+      var m = Math.floor(sec/60), s = sec%60;
+      return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    }
+    function tick(){
+      remaining--;
+      if(remaining <= 0){
+        remaining = 0;
+        clearInterval(interval); interval = null;
+        toggleBtn.textContent = 'Iniciar';
+        timer.classList.add('done');
+      }
+      display.textContent = fmt(remaining);
+    }
+    toggleBtn.addEventListener('click', function(){
+      if(interval){
+        clearInterval(interval); interval = null;
+        toggleBtn.textContent = 'Reanudar';
+      } else {
+        if(remaining <= 0) return;
+        timer.classList.remove('done');
+        interval = setInterval(tick, 1000);
+        toggleBtn.textContent = 'Pausar';
+      }
+    });
+    resetBtn.addEventListener('click', function(){
+      clearInterval(interval); interval = null;
+      remaining = duration;
+      display.textContent = fmt(remaining);
+      toggleBtn.textContent = 'Iniciar';
+      timer.classList.remove('done');
+    });
+  });
 
   show(0);
 })();
