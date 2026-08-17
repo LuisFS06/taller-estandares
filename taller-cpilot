@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De un prompt a un skill de ingeniería</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0A1A2F;
+  --deep:#12386B;
+  --blue:#1F6FEB;
+  --sky:#6FA8F5;
+  --wash:#EAF1FC;
+  --line:#D3E0F2;
+  --gray:#5B7291;
+  --white:#FFFFFF;
+  --rail:76px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--white);
+  color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+.deck{position:relative;height:100vh;width:100vw;overflow:hidden}
+.slide{
+  position:absolute;inset:0;
+  display:none;
+  flex-direction:column;
+  padding:clamp(28px,4.4vw,68px) clamp(24px,5vw,88px) 96px calc(var(--rail) + clamp(24px,4vw,60px));
+  overflow:auto;
+}
+.slide.active{display:flex}
+@media (prefers-reduced-motion: no-preference){
+  .slide.active > *{animation:rise .42s cubic-bezier(.2,.7,.3,1) both}
+  .slide.active > *:nth-child(2){animation-delay:.05s}
+  .slide.active > *:nth-child(3){animation-delay:.10s}
+  .slide.active > *:nth-child(4){animation-delay:.15s}
+  .slide.active > *:nth-child(5){animation-delay:.20s}
+}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.rail{
+  position:fixed;left:0;top:0;bottom:0;width:var(--rail);
+  border-right:1px solid var(--line);
+  background:linear-gradient(180deg,var(--wash),#fff 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+  padding:22px 0 96px;z-index:5;
+}
+.rail .mark{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;color:var(--blue)}
+.rail .vert{
+  writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--gray);
+}
+.rail .num{font-family:"Space Grotesk",sans-serif;font-size:13px;color:var(--deep)}
+
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:18px;
+}
+h1{
+  font-family:"Space Grotesk",sans-serif;font-weight:700;
+  font-size:clamp(38px,6.4vw,80px);line-height:1.02;letter-spacing:-.03em;
+  color:var(--ink);max-width:16ch;
+}
+h2{
+  font-family:"Space Grotesk",sans-serif;font-weight:700;
+  font-size:clamp(28px,3.8vw,50px);line-height:1.06;letter-spacing:-.025em;
+  margin-bottom:20px;max-width:20ch;
+}
+h3{
+  font-family:"Space Grotesk",sans-serif;font-weight:500;font-size:17px;
+  letter-spacing:-.01em;color:var(--deep);margin-bottom:10px;
+}
+p{font-size:clamp(15px,1.35vw,19px);line-height:1.55;color:#2C4360;max-width:62ch}
+p + p{margin-top:14px}
+.lead{font-size:clamp(17px,1.7vw,23px);color:var(--deep);max-width:52ch}
+strong{color:var(--ink);font-weight:600}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(20px,3vw,48px);align-items:start}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+ul.clean{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:8px}
+ul.clean li{
+  position:relative;padding-left:26px;font-size:clamp(15px,1.35vw,19px);
+  line-height:1.5;color:#2C4360;max-width:56ch;
+}
+ul.clean li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:2px;background:var(--sky)}
+ul.clean li b{color:var(--ink);font-weight:600}
+
+.card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:clamp(16px,2vw,26px)}
+.card.fill{background:var(--wash);border-color:#CFE0F7}
+
+pre.diagram{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:clamp(11px,1.05vw,14px);line-height:1.5;
+  color:var(--deep);background:var(--wash);
+  border:1px solid var(--line);border-left:3px solid var(--blue);
+  border-radius:8px;padding:18px 22px;overflow:auto;white-space:pre;
+}
+pre.code{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:clamp(11px,1.05vw,14px);line-height:1.6;
+  color:var(--ink);background:#fff;
+  border:1px solid var(--line);border-radius:8px;padding:16px 20px;overflow:auto;white-space:pre;
+}
+code{font-family:"IBM Plex Mono",monospace;font-size:.92em;color:var(--deep);background:var(--wash);padding:1px 6px;border-radius:4px}
+
+table{border-collapse:collapse;width:100%;font-size:clamp(13px,1.2vw,17px)}
+th{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gray);text-align:left;font-weight:500;padding:0 14px 10px 0;border-bottom:1px solid var(--line);
+}
+td{padding:12px 14px 12px 0;border-bottom:1px solid #EDF3FC;color:#2C4360}
+
+.tag{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border-radius:999px;
+}
+.tag.ok{background:var(--wash);color:var(--deep)}
+.tag.bad{background:#fff;color:var(--gray);border:1px solid var(--line)}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.vs .h{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;margin-bottom:10px;color:var(--gray);
+}
+.vs .no .h{color:#8FA6C0}
+.vs .yes .h{color:var(--blue)}
+.vs .no pre.code{background:#FBFCFE;color:#7B90AA;border-style:dashed}
+
+.arc{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.arc .row{
+  display:grid;grid-template-columns:76px 1fr;gap:20px;align-items:center;
+  padding:14px 0;border-top:1px solid #EDF3FC;
+}
+.arc .row:last-child{border-bottom:1px solid #EDF3FC}
+.arc .t{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--blue);letter-spacing:.12em}
+.arc .b{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+.arc .k{
+  font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(18px,2.2vw,30px);
+  letter-spacing:-.02em;color:var(--ink);min-width:9ch;
+}
+.arc .d{font-size:15px;color:var(--gray)}
+
+.foot{
+  position:fixed;left:0;right:0;bottom:0;height:64px;z-index:6;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(6px);
+  border-top:1px solid var(--line);
+  display:flex;align-items:center;gap:18px;padding:0 22px 0 calc(var(--rail) + 18px);
+}
+.segs{display:flex;gap:4px;flex:1;align-items:center}
+.seg{height:8px;border-radius:2px;background:#E7EFFA;transition:background .3s;position:relative}
+.seg span{
+  position:absolute;top:-16px;left:0;font-family:"IBM Plex Mono",monospace;
+  font-size:10px;letter-spacing:.12em;color:#A9BFD8;text-transform:uppercase;white-space:nowrap;
+}
+.seg.on{background:var(--blue)}
+.seg.on span{color:var(--deep)}
+.seg.done{background:var(--sky)}
+.count{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--gray)}
+.nav{display:flex;gap:6px}
+.nav button{
+  width:34px;height:30px;border:1px solid var(--line);background:#fff;border-radius:6px;
+  color:var(--deep);cursor:pointer;font-size:14px;line-height:1;
+}
+.nav button:hover{background:var(--wash)}
+.nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.hero{display:flex;flex-direction:column;justify-content:center;flex:1;gap:26px}
+.hero .flow{
+  font-family:"Space Grotesk",sans-serif;font-weight:500;
+  font-size:clamp(15px,1.8vw,22px);color:var(--sky);letter-spacing:.02em;
+}
+.hero .flow b{color:var(--blue);font-weight:700}
+.hero .meta{
+  display:flex;gap:34px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;
+  font-size:13px;color:var(--gray);border-top:1px solid var(--line);padding-top:20px;max-width:760px;
+}
+.hero .meta b{display:block;color:var(--deep);font-weight:500;margin-top:6px;font-size:15px}
+
+@media (max-width:820px){
+  :root{--rail:0px}
+  .rail{display:none}
+  .slide{padding:26px 22px 90px}
+  .two,.vs{grid-template-columns:1fr}
+  .arc .row{grid-template-columns:60px 1fr;gap:12px}
+}
+</style>
+</head>
+<body>
+
+<aside class="rail" aria-hidden="true">
+  <div class="mark">HE</div>
+  <div class="vert">Skills → Harness</div>
+  <div class="num" id="railnum">01</div>
+</aside>
+
+<main class="deck" id="deck">
+
+  <!-- 1 -->
+  <section class="slide active" data-phase="0">
+    <div class="hero">
+      <div class="eyebrow">Taller práctico · Copilot Skills</div>
+      <h1>De un prompt bonito a un skill de ingeniería</h1>
+      <div class="flow">crear → probar → romper → mejorar → <b>validar</b></div>
+      <div class="meta">
+        <div>Construyes<b>Un solo skill, de principio a fin</b></div>
+        <div>Necesitas<b>El repo del taller y Copilot</b></div>
+        <div>Te llevas<b>Un skill que verifica su propio trabajo</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="slide" data-phase="0">
+    <div class="eyebrow">Agenda</div>
+    <h2>Cinco pasos sobre el mismo skill</h2>
+    <div class="arc">
+      <div class="row"><div class="t">01</div><div class="b"><span class="k">Entender</span><span class="d">Qué es un skill y cuándo se carga</span></div></div>
+      <div class="row"><div class="t">02</div><div class="b"><span class="k">Crear</span><span class="d">Tu primer SKILL.md sobre un repo real</span></div></div>
+      <div class="row"><div class="t">03</div><div class="b"><span class="k">Romper</span><span class="d">Prompts que exponen dónde falla</span></div></div>
+      <div class="row"><div class="t">04</div><div class="b"><span class="k">Mejorar</span><span class="d">Description como routing, instructions como comportamiento</span></div></div>
+      <div class="row"><div class="t">05</div><div class="b"><span class="k">Validar</span><span class="d">Scripts, referencias y un bucle de corrección</span></div></div>
+    </div>
+    <p style="margin-top:24px">Al final ese conjunto tiene nombre: <strong>harness engineering</strong>.</p>
+  </section>
+
+  <!-- 3 -->
+  <section class="slide" data-phase="1">
+    <div class="eyebrow">01 · Entender</div>
+    <h2>Qué problema resuelve un skill</h2>
+    <div class="two">
+      <div class="stack">
+        <pre class="diagram">Prompt largo y repetitivo
+        ↓
+      Skill
+        ↓
+Prompt pequeño + comportamiento consistente</pre>
+        <p>Las convenciones dejan de vivir en tu cabeza y en cada mensaje que escribes. Pasan a estar en el repositorio.</p>
+      </div>
+      <div class="card">
+        <h3>Tres cosas por ahora</h3>
+        <ul class="clean">
+          <li><b>Qué es</b> un skill</li>
+          <li><b>Cuándo</b> se carga</li>
+          <li><b>Estructura mínima</b> de SKILL.md</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="slide" data-phase="1">
+    <div class="eyebrow">01 · Entender</div>
+    <h2>La estructura mínima</h2>
+    <div class="two">
+      <pre class="diagram">.github/
+└── skills/
+    └── python-development/
+        └── SKILL.md</pre>
+      <pre class="code">---
+name: python-development
+description: ...
+---
+# Instructions
+...</pre>
+    </div>
+    <p style="margin-top:24px">Dos partes con dos trabajos distintos: la <strong>description</strong> decide cuándo entra el skill, las <strong>instructions</strong> deciden qué hace cuando entra.</p>
+  </section>
+
+  <!-- 5 -->
+  <section class="slide" data-phase="2">
+    <div class="eyebrow">02 · Crear</div>
+    <h2>Tu reto</h2>
+    <p class="lead">Crear un skill que ayude a Copilot a implementar funciones Python siguiendo las convenciones de este proyecto.</p>
+    <div class="two" style="margin-top:28px">
+      <pre class="diagram">repo/
+├── src/
+├── tests/
+└── .github/
+    └── skills/
+        └── TODO</pre>
+      <div class="card fill">
+        <h3>Convenciones del proyecto</h3>
+        <ul class="clean">
+          <li>Type hints obligatorios</li>
+          <li>Docstrings solo para APIs públicas</li>
+          <li>Dependency injection</li>
+          <li>Nada de broad exceptions</li>
+          <li>pytest para los tests</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="slide" data-phase="2">
+    <div class="eyebrow">02 · Crear</div>
+    <h2>Cómo sabes que funciona</h2>
+    <pre class="code" style="max-width:62ch">Implement the TransactionService.process method.</pre>
+    <p style="margin-top:22px" class="lead">El agente aplica las reglas <strong>sin que tú las repitas</strong> en el prompt.</p>
+    <div class="card" style="margin-top:26px;max-width:66ch">
+      <p>Escribe la primera versión rápido y sin pulirla. En el siguiente paso vas a buscarle los fallos, y para eso necesitas una versión real, no una perfecta.</p>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="slide" data-phase="3">
+    <div class="eyebrow">03 · Romper</div>
+    <h2>Cinco prompts contra tu skill</h2>
+    <div class="two">
+      <pre class="code">1. Implement this service method.
+2. Refactor this module.
+3. Explain this function.
+4. Add unit tests.
+5. Update the README.</pre>
+      <div class="card">
+        <h3>Para cada uno, responde</h3>
+        <ul class="clean">
+          <li>¿Debería activarse el skill?</li>
+          <li>¿Se activó?</li>
+          <li>¿Hizo lo correcto?</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="slide" data-phase="3">
+    <div class="eyebrow">03 · Romper</div>
+    <h2>Anota lo que esperabas y lo que pasó</h2>
+    <table>
+      <thead><tr><th>Prompt</th><th>Expected</th><th>Actual</th></tr></thead>
+      <tbody>
+        <tr><td>Implement service</td><td><span class="tag ok">Skill</span></td><td><span class="tag ok">Skill</span></td></tr>
+        <tr><td>Explain code</td><td><span class="tag bad">No skill</span></td><td><span class="tag ok">Skill</span></td></tr>
+        <tr><td>Add tests</td><td><span class="tag ok">Skill</span></td><td><span class="tag bad">No skill</span></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:26px" class="lead">Cada fila que no cuadra es un fallo concreto que puedes arreglar. Casi siempre son de dos tipos.</p>
+  </section>
+
+  <!-- 9 -->
+  <section class="slide" data-phase="4">
+    <div class="eyebrow">04 · Mejorar</div>
+    <h2>Description = routing</h2>
+    <div class="vs">
+      <div class="no">
+        <div class="h">Demasiado ambiguo</div>
+        <pre class="code">description: Helps with Python.</pre>
+      </div>
+      <div class="yes">
+        <div class="h">Dice cuándo activarse</div>
+        <pre class="code">description: >
+  Implements and refactors Python business
+  logic and unit tests following the
+  repository's development conventions.
+  Use when modifying Python production
+  code or tests.</pre>
+      </div>
+    </div>
+    <p style="margin-top:24px">La description no describe el skill: <strong>enruta</strong>. Es lo que se lee para decidir si este skill entra en juego.</p>
+  </section>
+
+  <!-- 10 -->
+  <section class="slide" data-phase="4">
+    <div class="eyebrow">04 · Mejorar</div>
+    <h2>Instructions = comportamiento</h2>
+    <div class="vs">
+      <div class="no">
+        <div class="h">No es accionable</div>
+        <pre class="code">Write clean code.</pre>
+      </div>
+      <div class="yes">
+        <div class="h">Pasos comprobables</div>
+        <pre class="code">Before modifying code:
+1. Inspect related interfaces.
+2. Identify existing patterns in
+   nearby modules.
+3. Preserve public APIs unless
+   explicitly requested.
+4. Add or update tests.
+5. Run the relevant test suite.</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="slide" data-phase="4">
+    <div class="eyebrow">04 · Mejorar</div>
+    <h2>Reescribe con los fallos delante</h2>
+    <div class="two">
+      <pre class="diagram">Skill v1
+   ↓
+tests
+   ↓
+Skill v2</pre>
+      <div class="card fill">
+        <p class="lead">Vuelve a pasar los cinco prompts sobre la v2 y compara la tabla. Un skill se mejora con evidencia, no con intuición.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="slide" data-phase="5">
+    <div class="eyebrow">05 · Validar</div>
+    <h2>Dice que terminó, pero rompió los tests</h2>
+    <p class="lead">El código que genera es razonable. El problema es otro: no tiene forma de saber si lo que hizo funciona.</p>
+    <div class="card" style="margin-top:28px;max-width:68ch">
+      <h3>La pregunta de este bloque</h3>
+      <p>¿Cómo le damos una <strong>manera objetiva</strong> de verificar su propio trabajo?</p>
+    </div>
+  </section>
+
+  <!-- 13 -->
+  <section class="slide" data-phase="5">
+    <div class="eyebrow">05 · Validar</div>
+    <h2>El skill deja de ser un archivo y pasa a ser una carpeta</h2>
+    <div class="two">
+      <pre class="diagram">python-development/
+├── SKILL.md
+├── scripts/
+│   └── validate.py
+└── references/
+    └── conventions.md</pre>
+      <div class="card">
+        <h3>El script que vas a usar</h3>
+        <pre class="code">python scripts/validate.py</pre>
+        <p style="margin-top:12px">Por dentro ejecuta <code>ruff</code>, <code>pytest</code> y <code>mypy</code>. Ya viene listo en el repo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section class="slide" data-phase="5">
+    <div class="eyebrow">05 · Validar</div>
+    <h2>Modificar, validar, corregir</h2>
+    <div class="two">
+      <pre class="diagram">Understand
+    ↓
+Modify
+    ↓
+Validate
+    ↓
+Failure?
+ ┌──┴──┐
+ yes   no
+ ↓      ↓
+Fix    Done
+ │
+ └──────→ Validate</pre>
+      <pre class="code">## Validation workflow
+After modifying Python code:
+1. Run `python scripts/validate.py`.
+2. Inspect any failures.
+3. Correct the implementation.
+4. Run validation again.
+5. Do not consider the task complete
+   until validation passes.</pre>
+    </div>
+    <p style="margin-top:22px" class="lead">Ya no solo tiene instrucciones: tiene un <strong>mecanismo para comprobar su trabajo</strong>.</p>
+  </section>
+
+  <!-- 15 -->
+  <section class="slide" data-phase="5">
+    <div class="eyebrow">Reto final</div>
+    <h2>Un prompt que no has visto</h2>
+    <pre class="code" style="max-width:60ch">Implement the customer segmentation service
+and add its corresponding tests.</pre>
+    <div class="two" style="margin-top:28px">
+      <div class="card fill">
+        <h3>Comprueba cuatro cosas</h3>
+        <ul class="clean">
+          <li>¿Se activó el skill?</li>
+          <li>¿Siguió el workflow?</li>
+          <li>¿Pasó la validación?</li>
+          <li>¿Se detuvo cuando tocaba?</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p>Es la prueba de fuego del skill que has construido: un caso nuevo, sin pistas en el prompt.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 -->
+  <section class="slide" data-phase="6">
+    <div class="eyebrow">Cierre</div>
+    <h2>Lo que acabas de construir</h2>
+    <pre class="diagram">                  Agent
+                    │
+        ┌───────────┼───────────┐
+        ↓           ↓           ↓
+   Instructions   Skill       Context
+
+        ↓           ↓           ↓
+      Tools      Scripts    References
+                    │
+                    ↓
+               Validation
+                    │
+                    ↓
+                Feedback</pre>
+  </section>
+
+  <!-- 17 -->
+  <section class="slide" data-phase="6">
+    <div class="eyebrow">Cierre</div>
+    <h2>El recorrido del taller</h2>
+    <div class="two">
+      <div class="stack">
+        <pre class="diagram">Prompt
+   ↓
+Skill</pre>
+        <pre class="diagram">Skill
+ + context
+ + tools
+ + validation</pre>
+      </div>
+      <pre class="diagram">              ┌───────────────┐
+              │     Agent     │
+              └───────┬───────┘
+                      │
+       ┌──────────────┼──────────────┐
+       │              │              │
+    Skills         Context         Tools
+       │              │              │
+       └──────────────┼──────────────┘
+                      │
+                 Validation
+                      │
+                 Feedback loop
+                      │
+                  Evaluation</pre>
+    </div>
+  </section>
+
+  <!-- 18 -->
+  <section class="slide" data-phase="6">
+    <div class="eyebrow">Harness Engineering</div>
+    <h2>La idea, en una frase</h2>
+    <p style="font-size:clamp(19px,2.4vw,32px);line-height:1.35;color:var(--deep);max-width:26ch;font-family:'Space Grotesk',sans-serif;font-weight:500;letter-spacing:-.02em">
+      No hacer al agente fiable escribiendo el prompt perfecto, sino construir un sistema alrededor que haga más probable que decida bien y que pueda detectar y corregir sus errores.
+    </p>
+  </section>
+
+  <!-- 19 -->
+  <section class="slide" data-phase="6">
+    <div class="eyebrow">Cierre</div>
+    <h2>Todo esto son piezas de un harness</h2>
+    <pre class="diagram">description
+instructions
+references
+scripts
+validation
+tests
+          ↓
+    son piezas de un harness.</pre>
+    <p style="margin-top:26px" class="lead">Un skill fue solo la puerta de entrada. El resto del trabajo es construir el entorno donde ese skill puede acertar.</p>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="segs" id="segs" aria-hidden="true"></div>
+  <div class="count" id="count">01 / 19</div>
+  <div class="nav">
+    <button id="prev" aria-label="Anterior">←</button>
+    <button id="next" aria-label="Siguiente">→</button>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0;
+  var phases = [
+    {k:'Inicio', w:1},
+    {k:'Entender', w:1},
+    {k:'Crear', w:1},
+    {k:'Romper', w:1},
+    {k:'Mejorar', w:1},
+    {k:'Validar', w:1},
+    {k:'Harness', w:1}
+  ];
+  var segsEl = document.getElementById('segs');
+  phases.forEach(function(p){
+    var d = document.createElement('div');
+    d.className = 'seg';
+    d.style.flex = p.w;
+    d.innerHTML = '<span>' + p.k + '</span>';
+    segsEl.appendChild(d);
+  });
+  var segs = Array.prototype.slice.call(segsEl.children);
+
+  function pad(n){ return (n<10?'0':'') + n; }
+
+  function show(n){
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach(function(s,idx){ s.classList.toggle('active', idx===i); });
+    slides[i].scrollTop = 0;
+    var ph = parseInt(slides[i].dataset.phase, 10) || 0;
+    segs.forEach(function(s,idx){
+      s.classList.toggle('on', idx===ph);
+      s.classList.toggle('done', idx<ph);
+    });
+    document.getElementById('count').textContent = pad(i+1) + ' / ' + pad(slides.length);
+    document.getElementById('railnum').textContent = pad(i+1);
+  }
+
+  document.getElementById('next').addEventListener('click', function(){ show(i+1); });
+  document.getElementById('prev').addEventListener('click', function(){ show(i-1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){ e.preventDefault(); show(i+1); }
+    if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); show(i-1); }
+    if(e.key==='Home'){ show(0); }
+    if(e.key==='End'){ show(slides.length-1); }
+  });
+
+  var x0 = null;
+  document.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(x0===null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx) > 60){ show(dx < 0 ? i+1 : i-1); }
+    x0 = null;
+  }, {passive:true});
+
+  show(0);
+})();
+</script>
+</body>
+</html>
